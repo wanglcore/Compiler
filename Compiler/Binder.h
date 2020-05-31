@@ -19,8 +19,8 @@ class Binder {
       -> std::shared_ptr<BoundExpression>;
 
  private:
-  BoundUnaryOperatorKind BindUnaryOperatorKind(SyntaxKind kind, Type type);
-  BoundBinaryOperatorKind BindBinaryOperatorKind(SyntaxKind kind, Type lefttype,
-                                                 Type righttype);
+  //BoundUnaryOperatorKind BindUnaryOperatorKind(SyntaxKind kind, Type type);
+  //BoundBinaryOperatorKind BindBinaryOperatorKind(SyntaxKind kind, Type lefttype,
+  //                                               Type righttype);
 };
 }  // namespace Compiler

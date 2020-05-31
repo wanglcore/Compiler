@@ -29,6 +29,7 @@ auto Binder::BindBinaryExpression(
   auto right = BindExpression(syntax->right);
   auto oper =
       Operators::BindBinaryOperator(syntax->op->Kind, left->type, right->type);
+  /*BindBinaryOperatorKind(syntax->op->Kind,,left->type,right->type)*/
   return std::make_shared<BoundBinaryExpression>(left, oper, right);
 }
 
@@ -37,55 +38,61 @@ auto Binder::BindUnaryExpression(std::shared_ptr<UnaryExpressionSyntax> syntax)
   auto boundOperand = BindExpression(syntax->operand);
   auto boundOperator =
       Operators::BindUnaryOperator(syntax->op->Kind, boundOperand->type);
-  return std::make_shared<BoundUnaryExpression>(boundOperator, boundOperand);
+     /* BindUnaryOperatorKind(syntax->op->Kind, boundOperand->type);*/
+  return std::make_shared<BoundUnaryExpression>(boundOperator,
+                                                boundOperand);
 }
-
-inline BoundUnaryOperatorKind Binder::BindUnaryOperatorKind(SyntaxKind kind,
-                                                            Type type) {
-  if (type == Type::IntType) {
-    switch (kind) {
-      case SyntaxKind::PlusToken:
-        return BoundUnaryOperatorKind::Identity;
-      case SyntaxKind::MinusToken:
-        return BoundUnaryOperatorKind::Negation;
-    }
-  } else if (type == Type::BoolType) {
-    switch (kind) {
-      case SyntaxKind::BangToken:
-        return BoundUnaryOperatorKind::LogicalNegation;
-    }
-  } else {
-    return BoundUnaryOperatorKind::DefaultType;
-  }
-}
-
-inline BoundBinaryOperatorKind Binder::BindBinaryOperatorKind(SyntaxKind kind,
-                                                              Type lefttype,
-                                                              Type righttype) {
-  if (lefttype == Type::IntType && righttype == Type::IntType) {
-    switch (kind) {
-      case SyntaxKind::PlusToken:
-        return BoundBinaryOperatorKind::Addition;
-      case SyntaxKind::MinusToken:
-        return BoundBinaryOperatorKind::Subtraction;
-      case SyntaxKind::StarToken:
-        return BoundBinaryOperatorKind::Multiplication;
-      case SyntaxKind::SlashToken:
-        return BoundBinaryOperatorKind::Division;
-      default:
-        // throw exception
-        break;
-    }
-  } else if (lefttype == Type::BoolType && righttype == Type::BoolType) {
-    switch (kind) {
-      case SyntaxKind::AmpersandAmpersandToken:
-        return BoundBinaryOperatorKind::LogicalAnd;
-      case SyntaxKind::PipePipeToken:
-        return BoundBinaryOperatorKind::LogicalOr;
-    }
-  } else {
-    return BoundBinaryOperatorKind::DefaultType;
-  }
-}
+//
+//inline BoundUnaryOperatorKind Binder::BindUnaryOperatorKind(SyntaxKind kind,
+//                                                            Type type) {
+//  if (type == Type::IntType) {
+//    switch (kind) {
+//      case SyntaxKind::PlusToken:
+//        return BoundUnaryOperatorKind::Identity;
+//      case SyntaxKind::MinusToken:
+//        return BoundUnaryOperatorKind::Negation;
+//    }
+//  } else if (type == Type::BoolType) {
+//    switch (kind) {
+//      case SyntaxKind::BangToken:
+//        return BoundUnaryOperatorKind::LogicalNegation;
+//    }
+//  } else {
+//    return BoundUnaryOperatorKind::DefaultType;
+//  }
+//}
+//
+//inline BoundBinaryOperatorKind Binder::BindBinaryOperatorKind(SyntaxKind kind,
+//                                                              Type lefttype,
+//                                                              Type righttype) {
+//  if (lefttype == Type::IntType && righttype == Type::IntType) {
+//    switch (kind) {
+//      case SyntaxKind::PlusToken:
+//        return BoundBinaryOperatorKind::Addition;
+//      case SyntaxKind::MinusToken:
+//        return BoundBinaryOperatorKind::Subtraction;
+//      case SyntaxKind::StarToken:
+//        return BoundBinaryOperatorKind::Multiplication;
+//      case SyntaxKind::SlashToken:
+//        return BoundBinaryOperatorKind::Division;
+//      default:
+//        // throw exception
+//        break;
+//    }
+//  }
+//  else if (lefttype == Type::BoolType && righttype == Type::BoolType)
+//  {
+//    switch (kind) {
+//      case SyntaxKind::AmpersandAmpersandToken:
+//        return BoundBinaryOperatorKind::LogicalAnd;
+//      case SyntaxKind::PipePipeToken:
+//        return BoundBinaryOperatorKind::LogicalOr;
+//    }
+//  }
+//  else
+//  {
+//      return BoundBinaryOperatorKind::DefaultType;
+//  }
+//}
 
 }  // namespace Compiler
