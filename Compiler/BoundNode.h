@@ -8,4 +8,5 @@ class BoundNode {
   virtual bool EqualsKind(BoundNodeKind other) { return other == Kind; }
   virtual ~BoundNode(){}
 };
+
 }  // namespace Compiler

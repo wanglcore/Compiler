@@ -4,80 +4,97 @@ std::shared_ptr<SyntaxToken> Lexer::NextToken() {
   if (position >= length) {
     return std::make_shared<SyntaxToken>(SyntaxKind::EndOfFileToken, position,
                                          "\0");
-  }
-  if (std::isdigit(Current())) {
+  } else if (std::isdigit(Current())) {
     int start = position;
     while (std::isdigit(Current())) {
       Next();
     }
-    auto _text = text.substr(start, position - start);
+    auto _text = text->SubString(start, position - start);
+    // auto _text = text.substr(start, position - start);
     Object value = std::stoi(_text);
     return std::make_shared<SyntaxToken>(SyntaxKind::NumberToken, start, _text,
                                          value, Type::IntType);
-  }
-  if (std::islower(Current())) {
+  } else if (std::isalpha(Current())) {
     int start = position;
-    while (std::islower(Current())) {
+    while (std::isalpha(Current())) {
       Next();
     }
-    auto _text = text.substr(start, position - start);
+    // auto _text = text.substr(start, position - start);
+    auto _text = text->SubString(start, position - start);
+
     auto keyword = SyntaxFacts::GetKeyWordKind(_text);
     return std::make_shared<SyntaxToken>(keyword, start, _text);
-  }
-  if (std::isspace(Current())) {
+  } else if (std::isspace(Current()) || Current() == ' ' || Current() == '\n' ||
+             Current() == '\t' || Current() == '\r') {
     int start = position;
-    while (std::isspace(Current())) {
+    while (std::isspace(Current()) || Current() == ' ' || Current() == '\n' ||
+           Current() == '\t' || Current() == '\r') {
       Next();
       /* code */
     }
-    auto _text = text.substr(start, position - start);
-    return std::make_shared<SyntaxToken>(SyntaxKind::SpaceToken, start, _text);
-  }
-  if (Current() == '|') {
-    if (LookHead() == '|') {
-      position++;
-      return std::make_shared<SyntaxToken>(SyntaxKind::PipePipeToken,
-                                           position - 1, "||");
-    }
-  }
-  if (Current() == '&') {
-    if (LookHead() == '&') {
-      position++;
-      return std::make_shared<SyntaxToken>(SyntaxKind::AmpersandAmpersandToken,
-                                           position - 1, "&&");
-    }
-  }
+    // auto _text = text.substr(start, position - start);
+    auto _text = text->SubString(start, position - start);
 
-  if (Current() == '!') {
-    return std::make_shared<SyntaxToken>(SyntaxKind::BangToken, ++position,
-                                         "!");
-  }
-  if (Current() == '+') {
+    return std::make_shared<SyntaxToken>(SyntaxKind::SpaceToken, start, _text);
+  } else if (Current() == '|') {
+    if (LookHead() == '|') {
+      position += 2;
+      return std::make_shared<SyntaxToken>(SyntaxKind::PipePipeToken,
+                                           position - 2, "||");
+    }
+  } else if (Current() == '&') {
+    if (LookHead() == '&') {
+      position += 2;
+      return std::make_shared<SyntaxToken>(SyntaxKind::AmpersandAmpersandToken,
+                                           position - 2, "&&");
+    }
+  } else if (Current() == '=') {
+    if (LookHead() == '=') {
+      position += 2;
+      return std::make_shared<SyntaxToken>(SyntaxKind::EqualsEqualsToken,
+                                           position - 2, "==");
+    } else {
+      ++position;
+      return std::make_shared<SyntaxToken>(SyntaxKind::EqualsToken,
+                                           position - 1, "=");
+    }
+  } else if (Current() == '!') {
+    if (LookHead() == '=') {
+      position += 2;
+      return std::make_shared<SyntaxToken>(SyntaxKind::NotEqualsToken,
+                                           position - 2, "!=");
+    } else {
+      ++position;
+      return std::make_shared<SyntaxToken>(SyntaxKind::BangToken, position - 1,
+                                           "!");
+    }
+  } else if (Current() == '+') {
     return std::make_shared<SyntaxToken>(SyntaxKind::PlusToken, ++position,
                                          "+");
-  }
-  if (Current() == '-') {
+  } else if (Current() == '-') {
     return std::make_shared<SyntaxToken>(SyntaxKind::MinusToken, ++position,
                                          "-");
-  }
-  if (Current() == '*') {
+  } else if (Current() == '*') {
     return std::make_shared<SyntaxToken>(SyntaxKind::StarToken, ++position,
                                          "*");
-  }
-  if (Current() == '/') {
+  } else if (Current() == '/') {
     return std::make_shared<SyntaxToken>(SyntaxKind::SlashToken, ++position,
                                          "/");
-  }
-  if (Current() == '(') {
+  } else if (Current() == '(') {
     return std::make_shared<SyntaxToken>(SyntaxKind::OpenParenthesisToken,
                                          ++position, "(");
-  }
-  if (Current() == ')') {
+  } else if (Current() == ')') {
     return std::make_shared<SyntaxToken>(SyntaxKind::CloseParenthesisToken,
                                          ++position, ")");
+  } else if (Current() == '{') {
+    return std::make_shared<SyntaxToken>(SyntaxKind::OpenBraceToken, ++position,
+                                         "{");
+  } else if (Current() == '}') {
+    return std::make_shared<SyntaxToken>(SyntaxKind::CloseBraceToken,
+                                         ++position, "}");
   }
   ++position;
   return std::make_shared<SyntaxToken>(SyntaxKind::BadToken, position - 1,
-                                       text.substr(position - 1, 1));
+                                       text->SubString(position - 1, 1));
 }
 }  // namespace Compiler

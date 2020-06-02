@@ -13,4 +13,5 @@ class ExpressionSyntax : public SyntaxNode {
 
   virtual ~ExpressionSyntax() {}
 };
+
 }  // namespace Compiler

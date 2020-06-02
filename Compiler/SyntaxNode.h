@@ -14,4 +14,6 @@ class SyntaxNode {
   virtual size_t GetMemberLength()const{return 0;}
   virtual ~SyntaxNode() {}
 };
+
+
 }  // namespace Compiler

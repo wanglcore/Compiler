@@ -31,6 +31,18 @@ std::vector<std::shared_ptr<BoundBinaryOperator>> Operators::binaryOperators = {
     std::make_shared<BoundBinaryOperator>(
         SyntaxKind::PipePipeToken, BoundBinaryOperatorKind::LogicalOr,
         Type::BoolType, Type::BoolType, Type::BoolType),
+    std::make_shared<BoundBinaryOperator>(
+        SyntaxKind::EqualsEqualsToken, BoundBinaryOperatorKind::Equsls,
+        Type::IntType, Type::IntType, Type::BoolType),
+    std::make_shared<BoundBinaryOperator>(
+        SyntaxKind::EqualsEqualsToken, BoundBinaryOperatorKind::Equsls,
+        Type::BoolType, Type::BoolType, Type::BoolType),
+    std::make_shared<BoundBinaryOperator>(
+        SyntaxKind::NotEqualsToken, BoundBinaryOperatorKind::NotEquals,
+        Type::IntType, Type::IntType, Type::BoolType),
+    std::make_shared<BoundBinaryOperator>(
+        SyntaxKind::NotEqualsToken, BoundBinaryOperatorKind::NotEquals,
+        Type::BoolType, Type::BoolType, Type::BoolType),
 };
 
 std::shared_ptr<BoundUnaryOperator> Operators::BindUnaryOperator(

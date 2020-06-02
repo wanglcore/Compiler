@@ -1,11 +1,9 @@
 
+#include <fstream>
 #include <iostream>
 #include <string>
-#include <variant>
 
-#include "Binder.h"
 #include "Evaluator.h"
-#include "Lexer.h"
 #include "SyntaxTree.h"
 #include "Type.h"
 using namespace Compiler;
@@ -28,41 +26,59 @@ void WriteLine(Object value) {
       break;
   }
 }
+std::string GetCode(std::string file) {
+  std::ifstream ifs(file, std::ios::in);
+  std::string code;
+  std::string line;
+  while (std::getline(ifs, line)) {
+    line = line + '\n';
+    code = code + line;
+  }
+  std::cout << code << std::endl;
+  return code;
+}
+std::map<VariableSymbol, Object> variables;
 int main() {
   std::string line;
   std::variant<int, nullptr_t> vars;
   vars = nullptr;
-  while (true) {
+  std::shared_ptr<Compilation> previous = nullptr;
+  std::string filename = "Text.txt";
+  std::string code = GetCode(filename);
+  auto expression = SyntaxTree::Parse(code);
+  auto compliation = std::make_shared<Compilation>(expression);
+  auto value = compliation->Evaluate(variables);
+  WriteLine(value->value);
+
+  /*while (true) {
     std::cout << ">> ";
     std::getline(std::cin, line);
     if (line.empty()) {
       continue;
     }
     auto expression = SyntaxTree::Parse(line);
-    auto binder = std::make_shared<Binder>();
-    auto boundexpression = binder->BindExpression(expression->root);
-    Evaluator eval(boundexpression);
-    auto value = eval.Evaluate();
-    WriteLine(value);
-    Print(expression->root, "", false);
-  }
+    auto compliation = previous == nullptr
+                           ? std::make_shared<Compilation>(expression)
+                           : previous->ContinueWith(expression);
+    auto value = compliation->Evaluate(variables);
+    WriteLine(value->value);
+    Print(expression->root->statement, "", false);
+    previous = std::move(compliation);
+  }*/
   return 0;
 }
 
 void Print(std::shared_ptr<SyntaxNode> node, std::string indent = "",
            bool isLast = false) {
-  //©¸©¤©¤
-  //©À©¤©¤
-  //©¦
   std::cout << indent;
-  std::cout << (isLast ? "©¸©¤©¤" : "©À©¤©¤");
+  std::cout << (isLast ? "+---" : "|---");
   std::cout << node->Kind;
   if (node->GetNodeKind() == NodeKind::SyntaxTokenNode) {
     auto syntaxToken = std::dynamic_pointer_cast<SyntaxToken>(node);
     std::cout << " " << syntaxToken->text;
   }
   std::cout << std::endl;
-  std::string nextindent = indent + (isLast ? "    " : "©¦   ");
+  std::string nextindent = indent + (isLast ? "    " : "|   ");
   int len = node->GetMemberLength() - 1;
   for (auto child : node->GetChildren()) {
     if (len >= 0) {

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -149,17 +149,24 @@
     <ClInclude Include="BoundNode.h" />
     <ClInclude Include="BoundOperator.h" />
     <ClInclude Include="BoundAllExpression.h" />
+    <ClInclude Include="BoundScope.h" />
+    <ClInclude Include="BoundStatement.h" />
+    <ClInclude Include="CompilationUnitSyntax.h" />
     <ClInclude Include="Evaluator.h" />
     <ClInclude Include="ExpressionSyntax.h" />
     <ClInclude Include="Lexer.h" />
     <ClInclude Include="LiteralExpressionSyntax.h" />
+    <ClInclude Include="NameAndAssignmentExpressionSyntax.h" />
     <ClInclude Include="Operator.h" />
     <ClInclude Include="ParenthesizedExpressionSyntax.h" />
     <ClInclude Include="Parser.h" />
+    <ClInclude Include="SourceText.h" />
+    <ClInclude Include="Statement.h" />
     <ClInclude Include="SyntaxFacts.h" />
     <ClInclude Include="SyntaxNode.h" />
     <ClInclude Include="SyntaxToken.h" />
     <ClInclude Include="SyntaxTree.h" />
+    <ClInclude Include="TextSpan.h" />
     <ClInclude Include="Type.h" />
     <ClInclude Include="UnaryExpressionSyntax.h" />
   </ItemGroup>
@@ -170,6 +177,9 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Operator.cpp" />
     <ClCompile Include="Parser.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Text.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

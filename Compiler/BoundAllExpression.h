@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "BoundExpression.h"
@@ -36,7 +37,7 @@ class BoundBinaryExpression final : public BoundExpression {
   BoundBinaryExpression(std::shared_ptr<BoundExpression> _left,
                         std::shared_ptr<BoundBinaryOperator> _op,
                         std::shared_ptr<BoundExpression> _right)
-      : BoundExpression(BoundNodeKind::BinaryExpression, _left->type),
+      : BoundExpression(BoundNodeKind::BinaryExpression, _op->resultType),
         op(_op),
         left(_left),
         right(_right) {}
@@ -45,6 +46,25 @@ class BoundBinaryExpression final : public BoundExpression {
   bool EqualsKind(BoundNodeKind other) override {
     return other == BoundNode::Kind;
   }
+};
+
+class BoundVariableExpression final : public BoundExpression {
+ public:
+  BoundVariableExpression(VariableSymbol _symbol)
+      : BoundExpression(BoundNodeKind::VariableExpression, _symbol.type),
+        symbol(_symbol) {}
+  VariableSymbol symbol;
+};
+
+class BoundAssignmentExpression final : public BoundExpression {
+ public:
+  BoundAssignmentExpression(VariableSymbol _symbol,
+                            std::shared_ptr<BoundExpression> _expression)
+      : BoundExpression(BoundNodeKind::AssignmentExpression, _expression->type),
+        symbol(_symbol),
+        expression(_expression) {}
+  VariableSymbol symbol;
+  std::shared_ptr<BoundExpression> expression;
 };
 
 };  // namespace Compiler

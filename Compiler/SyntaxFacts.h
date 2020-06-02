@@ -8,7 +8,7 @@ class SyntaxFacts {
       case SyntaxKind::PlusToken:
       case SyntaxKind::MinusToken:
       case SyntaxKind::BangToken:
-        return 5;
+        return 6;
         break;
       default:
         return 0;
@@ -19,11 +19,13 @@ class SyntaxFacts {
     switch (kind) {
       case Compiler::SyntaxKind::StarToken:
       case Compiler::SyntaxKind::SlashToken:
-        return 4;
+        return 5;
       case Compiler::SyntaxKind::PlusToken:
       case Compiler::SyntaxKind::MinusToken:
+        return 4;
+      case Compiler::SyntaxKind::NotEqualsToken:
+      case Compiler::SyntaxKind::EqualsEqualsToken:
         return 3;
-
       case SyntaxKind::AmpersandAmpersandToken:
         return 2;
       case SyntaxKind::PipePipeToken:

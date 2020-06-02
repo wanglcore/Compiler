@@ -12,31 +12,51 @@ enum class SyntaxKind {
   SlashToken,
   OpenParenthesisToken,
   CloseParenthesisToken,
+  OpenBraceToken,
+  CloseBraceToken,
   BadToken,
   EndOfFileToken,
+  SpaceToken,
+  IdentifierToken,
+  TrueToken,
+  FalseToken,
 
+  EqualsToken,
   BangToken,
   AmpersandAmpersandToken,
   PipePipeToken,
+  EqualsEqualsToken,
+  NotEqualsToken,
 
-  SpaceToken,
   LiteralExpression,
   BinaryExpression,
   UnaryExpression,
   ParenthesizedExpression,
-  IdentifierToken,
-  TrueToken,
-  FalseToken
+  NameExpression,
+  AssignmentExpression,
+  CompilationUnit,
+
+  BlockStatement,
+  ExpressionStatement
 };
 
 enum class BoundNodeKind {
   DefaultBoundNodeKind,
   UnaryExpression,
   LiteralExpression,
-  BinaryExpression
+  BinaryExpression,
+  VariableExpression,
+  AssignmentExpression,
+  BlockStatement,
+  ExpressionStatement
 };
-enum class Type { DefaultType, IntType ,BoolType};
-enum class BoundUnaryOperatorKind { Identity, Negation, DefaultType,LogicalNegation };
+enum class Type { IntType, BoolType, DefaultType };
+enum class BoundUnaryOperatorKind {
+  Identity,
+  Negation,
+  DefaultType,
+  LogicalNegation
+};
 enum class BoundBinaryOperatorKind {
   Addition,
   Subtraction,
@@ -44,6 +64,8 @@ enum class BoundBinaryOperatorKind {
   Division,
   LogicalAnd,
   LogicalOr,
+  Equsls,
+  NotEquals,
   DefaultType
 };
 enum class NodeKind {
@@ -54,8 +76,23 @@ enum class NodeKind {
   BinaryExpressionSyntaxNode,
   UnaryExpressionSyntaxNode,
   LiteralExpressionSyntaxNode,
-  ParenthesizedExpressionSyntaxNode
+  ParenthesizedExpressionSyntaxNode,
+  NameExpressionNode,
+  AssignmentExpressionNode,
+  CompilationUnitNode,
+  StatementSyntaxNode,
+  BlockStatementNode,
+  ExpressionStatementNode
 };
+struct VariableSymbol {
+  std::string name;
+  Type type;
+  VariableSymbol(std::string _name, Type _type) : name(_name), type(_type) {}
+  VariableSymbol() : name(""), type(Type::DefaultType) {}
+};
+static bool operator<(const VariableSymbol& v1, const VariableSymbol& v2) {
+  return v1.name < v2.name;
+}
 static std::ostream& operator<<(std::ostream& os, const SyntaxKind& kind) {
   switch (kind) {
     case SyntaxKind::UnaryExpression:
@@ -102,6 +139,39 @@ static std::ostream& operator<<(std::ostream& os, const SyntaxKind& kind) {
       break;
     case SyntaxKind::ParenthesizedExpression:
       os << "ParenthesizedExpression";
+      break;
+    case SyntaxKind::IdentifierToken:
+      os << "IdentifierToken";
+      break;
+    case SyntaxKind::EqualsEqualsToken:
+      os << "EqualsEqualsToken";
+      break;
+    case SyntaxKind::EqualsToken:
+      os << "EqualsToken";
+      break;
+    case SyntaxKind::TrueToken:
+      os << "TrueToken";
+      break;
+    case SyntaxKind::FalseToken:
+      os << "FalseToken";
+      break;
+    case SyntaxKind::AmpersandAmpersandToken:
+      os << "AmpersandAmpersandToken";
+      break;
+    case SyntaxKind::PipePipeToken:
+      os << "PipePipeToken";
+      break;
+    case SyntaxKind::NotEqualsToken:
+      os << "NotEqualsToken";
+      break;
+    case SyntaxKind::AssignmentExpression:
+      os << "AssignmentExpression";
+      break;
+    case SyntaxKind::BangToken:
+      os << "BangToken";
+      break;
+    case SyntaxKind::NameExpression:
+      os << "NameExpression";
       break;
   }
   return os;

@@ -1,6 +1,36 @@
 #include "Evaluator.h"
 namespace Compiler {
-Object Compiler::Evaluator::Evaluate() { return EvaluateExpression(root); }
+Object Compiler::Evaluator::Evaluate() {
+  EvaluateStatement(root);
+  return lastValue;
+}
+
+void Evaluator::EvaluateStatement(std::shared_ptr<BoundStatement> statement) {
+  switch (statement->Kind) {
+    case BoundNodeKind::BlockStatement:
+      EvaluateBlockStatement(
+          std::dynamic_pointer_cast<BoundBlockStatement>(statement));
+      break;
+    case BoundNodeKind::ExpressionStatement:
+      EvaluateExpressionStatement(
+          std::dynamic_pointer_cast<BoundExpressionStatement>(statement));
+      break;
+    default:
+      break;
+  }
+}
+
+void Evaluator::EvaluateBlockStatement(
+    std::shared_ptr<BoundBlockStatement> statement) {
+  for (auto u : statement->statements) {
+    EvaluateStatement(u);
+  }
+}
+
+void Evaluator::EvaluateExpressionStatement(
+    std::shared_ptr<BoundExpressionStatement> statement) {
+  lastValue = EvaluateExpression(statement->expression);
+}
 
 Object Compiler::Evaluator::EvaluateExpression(
     std::shared_ptr<BoundExpression> _root) {
@@ -22,7 +52,17 @@ Object Compiler::Evaluator::EvaluateExpression(
         return !std::get<1>(val);
     }
   }
-  if (_root->EqualsKind(BoundNodeKind::BinaryExpression)) {
+  if (_root->EqualsKind(BoundNodeKind::VariableExpression)) {
+    auto variable = std::dynamic_pointer_cast<BoundVariableExpression>(_root);
+    return variables[variable->symbol];
+  } else if (_root->EqualsKind(BoundNodeKind::AssignmentExpression)) {
+    auto assignment =
+        std::dynamic_pointer_cast<BoundAssignmentExpression>(_root);
+    auto value = EvaluateExpression(assignment->expression);
+    variables[assignment->symbol] = value;
+    // variables[assignment] = {value, static_cast<Type>(value.index())};
+    return value;
+  } else if (_root->EqualsKind(BoundNodeKind::BinaryExpression)) {
     auto binaryExpressionSyntax =
         std::dynamic_pointer_cast<BoundBinaryExpression>(_root);
     auto left = EvaluateExpression(binaryExpressionSyntax->left);
@@ -40,6 +80,10 @@ Object Compiler::Evaluator::EvaluateExpression(
         return std::get<1>(left) && std::get<1>(right);
       case BoundBinaryOperatorKind::LogicalOr:
         return std::get<1>(left) || std::get<1>(right);
+      case BoundBinaryOperatorKind::Equsls:
+        return left == right;
+      case BoundBinaryOperatorKind::NotEquals:
+        return left != right;
       default:
         break;
     }

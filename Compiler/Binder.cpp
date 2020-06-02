@@ -9,9 +9,18 @@ auto Binder::BindExpression(std::shared_ptr<ExpressionSyntax> syntax)
     case SyntaxKind::BinaryExpression:
       return BindBinaryExpression(
           std::dynamic_pointer_cast<BinaryExpressionSyntax>(syntax));
+    case SyntaxKind::ParenthesizedExpression:
+      return BindParenthesizedExpression(
+          std::dynamic_pointer_cast<ParenthesizedExpressionSyntax>(syntax));
     case SyntaxKind::UnaryExpression:
       return BindUnaryExpression(
           std::dynamic_pointer_cast<UnaryExpressionSyntax>(syntax));
+    case SyntaxKind::NameExpression:
+      return BindNameExpression(
+          std::dynamic_pointer_cast<NameExpressionSyntax>(syntax));
+    case SyntaxKind::AssignmentExpression:
+      return BindAssignmentExpression(
+          std::dynamic_pointer_cast<AssignmentExpressionSyntax>(syntax));
     default:
       return nullptr;
   }
@@ -38,12 +47,93 @@ auto Binder::BindUnaryExpression(std::shared_ptr<UnaryExpressionSyntax> syntax)
   auto boundOperand = BindExpression(syntax->operand);
   auto boundOperator =
       Operators::BindUnaryOperator(syntax->op->Kind, boundOperand->type);
-     /* BindUnaryOperatorKind(syntax->op->Kind, boundOperand->type);*/
-  return std::make_shared<BoundUnaryExpression>(boundOperator,
-                                                boundOperand);
+  /* BindUnaryOperatorKind(syntax->op->Kind, boundOperand->type);*/
+  return std::make_shared<BoundUnaryExpression>(boundOperator, boundOperand);
+}
+auto Binder::BindNameExpression(std::shared_ptr<NameExpressionSyntax> syntax)
+    -> std::shared_ptr<BoundExpression> {
+  auto name = syntax->identifierToken->text;
+  if (VariableSymbol variable; scope->TryLookUp(name, variable)) {
+    return std::make_shared<BoundVariableExpression>(variable);
+  }
+  /*if (auto value =
+          std::find_if(variables.begin(), variables.end(),
+                       [name](const std::pair<VariableSymbol, Object>& t) {
+                         return t.first.name == name;
+                       });
+      value != variables.end()) {
+    return std::make_shared<BoundVariableExpression>(value->first);
+  }*/
+  return nullptr;
+}
+auto Binder::BindAssignmentExpression(
+    std::shared_ptr<AssignmentExpressionSyntax> syntax)
+    -> std::shared_ptr<BoundExpression> {
+  auto name = syntax->identifierToken->text;
+  auto boundexpression = BindExpression(syntax->expression);
+  // auto variable = VariableSymbol(name, boundexpression->type);
+  VariableSymbol variable;
+  if (!scope->TryLookUp(name, variable)) {
+    variable = VariableSymbol(name, boundexpression->type);
+    scope->TryDeclare(variable);
+  }
+  return std::make_shared<BoundAssignmentExpression>(variable, boundexpression);
+  // if (scope->TryDeclare(variable)) {
+  //  return std::make_shared<BoundAssignmentExpression>(variable,
+  //                                                     boundexpression);
+  //}
+  /* Object defaultValue =
+       boundexpression->type == Type::IntType
+           ? 0
+           : Type::BoolType == boundexpression->type ? false : nullptr;*/
+  // auto iter = std::find_if(variables.begin(), variables.end(),
+  //                         [name](const std::pair<VariableSymbol, Object>& t)
+  //                         {
+  //                           return t.first.name == name;
+  //                         });
+  //
+  // if (iter != variables.end()) {
+  //  variables.erase(iter->first);
+  //}
+  // variables.emplace(variable, nullptr);
+  // return std::make_shared<BoundAssignmentExpression>(variable,
+  // boundexpression);
+}
+auto Binder::BindParenthesizedExpression(
+    std::shared_ptr<ParenthesizedExpressionSyntax> syntax)
+    -> std::shared_ptr<BoundExpression> {
+  return BindExpression(syntax->expression);
+}
+auto Binder::BindStatement(std::shared_ptr<StatementSyntax> statement)
+    -> std::shared_ptr<BoundStatement> {
+  switch (statement->Kind) {
+    case SyntaxKind::BlockStatement:
+      return BindBlockStatement(
+          std::dynamic_pointer_cast<BlockStatementSyntax>(statement));
+    case SyntaxKind::ExpressionStatement:
+      return BindExpressionStatement(
+          std::dynamic_pointer_cast<ExpressionStatementSyntax>(statement));
+    default:
+      break;
+  }
+}
+auto Binder::BindBlockStatement(std::shared_ptr<BlockStatementSyntax> syntax)
+    -> std::shared_ptr<BoundStatement> {
+  std::vector<std::shared_ptr<BoundStatement>> _statements;
+  for (auto _statement : syntax->statements) {
+    auto state = BindStatement(_statement);
+    _statements.push_back(state);
+  }
+  return std::make_shared<BoundBlockStatement>(_statements);
+}
+auto Binder::BindExpressionStatement(
+    std::shared_ptr<ExpressionStatementSyntax> syntax)
+    -> std::shared_ptr<BoundStatement> {
+  auto expression = BindExpression(syntax->expression);
+  return std::make_shared<BoundExpressionStatement>(expression);
 }
 //
-//inline BoundUnaryOperatorKind Binder::BindUnaryOperatorKind(SyntaxKind kind,
+// inline BoundUnaryOperatorKind Binder::BindUnaryOperatorKind(SyntaxKind kind,
 //                                                            Type type) {
 //  if (type == Type::IntType) {
 //    switch (kind) {
@@ -62,9 +152,11 @@ auto Binder::BindUnaryExpression(std::shared_ptr<UnaryExpressionSyntax> syntax)
 //  }
 //}
 //
-//inline BoundBinaryOperatorKind Binder::BindBinaryOperatorKind(SyntaxKind kind,
+// inline BoundBinaryOperatorKind Binder::BindBinaryOperatorKind(SyntaxKind
+// kind,
 //                                                              Type lefttype,
-//                                                              Type righttype) {
+//                                                              Type righttype)
+//                                                              {
 //  if (lefttype == Type::IntType && righttype == Type::IntType) {
 //    switch (kind) {
 //      case SyntaxKind::PlusToken:
