@@ -93,6 +93,12 @@
     <ClInclude Include="BoundStatement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="VariableDeclarationSyntax.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConditionStatement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

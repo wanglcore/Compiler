@@ -21,7 +21,6 @@ std::shared_ptr<SyntaxToken> Lexer::NextToken() {
     }
     // auto _text = text.substr(start, position - start);
     auto _text = text->SubString(start, position - start);
-
     auto keyword = SyntaxFacts::GetKeyWordKind(_text);
     return std::make_shared<SyntaxToken>(keyword, start, _text);
   } else if (std::isspace(Current()) || Current() == ' ' || Current() == '\n' ||
@@ -57,6 +56,26 @@ std::shared_ptr<SyntaxToken> Lexer::NextToken() {
       ++position;
       return std::make_shared<SyntaxToken>(SyntaxKind::EqualsToken,
                                            position - 1, "=");
+    }
+  } else if (Current() == '>') {
+    if (LookHead() == '=') {
+      position += 2;
+      return std::make_shared<SyntaxToken>(SyntaxKind::GreaterOrEqualToken,
+                                           position - 2, ">=");
+    } else {
+      ++position;
+      return std::make_shared<SyntaxToken>(SyntaxKind::GreaterToken,
+                                           position - 1, ">");
+    }
+  } else if (Current() == '<') {
+    if (LookHead() == '=') {
+      position += 2;
+      return std::make_shared<SyntaxToken>(SyntaxKind::LessOrEqualToken,
+                                           position - 2, "<=");
+    } else {
+      ++position;
+      return std::make_shared<SyntaxToken>(SyntaxKind::LessToken, position - 1,
+                                           "<");
     }
   } else if (Current() == '!') {
     if (LookHead() == '=') {

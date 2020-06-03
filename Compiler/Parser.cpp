@@ -43,6 +43,11 @@ auto Compiler::Parser::ParseCompilationUnit()
 auto Compiler::Parser::ParseStatement() -> std::shared_ptr<StatementSyntax> {
   if (Current()->Kind == SyntaxKind::OpenBraceToken) {
     return ParseBlockStatement();
+  } else if (Current()->Kind == SyntaxKind::VarToken ||
+             Current()->Kind == SyntaxKind::LetToken) {
+    return ParseVariableDeclaration();
+  } else if (Current()->Kind == SyntaxKind::IfToken) {
+    return ParseIfStatement();
   }
   return ParseExpressionStatement();
 }
@@ -165,4 +170,33 @@ auto Compiler::Parser::ParseAssignmentExpression()
                                                         equalToken, expression);
   }
   return ParseBinaryExpression(0);
+}
+
+auto Compiler::Parser::ParseVariableDeclaration()
+    -> std::shared_ptr<StatementSyntax> {
+  auto keyword = NextToken();
+  auto identifier = NextToken();
+  auto equalsToken = NextToken();
+  auto initializer = ParseExpression();
+  return std::make_shared<VariableDeclarationSyntax>(keyword, identifier,
+                                                     equalsToken, initializer);
+}
+
+auto Compiler::Parser::ParseIfStatement() -> std::shared_ptr<StatementSyntax> {
+  auto ifkeyword = NextToken();
+  auto condition = ParseExpression();
+  auto statement = ParseStatement();
+  auto elseclause = ParseElseStatement();
+  return std::make_shared<IfStatementSyntax>(ifkeyword, condition, statement,
+                                             elseclause);
+}
+
+auto Compiler::Parser::ParseElseStatement()
+    -> std::shared_ptr<ElseClauseSyntax> {
+  if (Current()->Kind == SyntaxKind::ElseToken) {
+    auto elsekeyword = NextToken();
+    auto elsestatement = ParseStatement();
+    return std::make_shared<ElseClauseSyntax>(elsekeyword, elsestatement);
+  }
+  return nullptr;
 }

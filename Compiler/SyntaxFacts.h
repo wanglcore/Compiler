@@ -25,6 +25,10 @@ class SyntaxFacts {
         return 4;
       case Compiler::SyntaxKind::NotEqualsToken:
       case Compiler::SyntaxKind::EqualsEqualsToken:
+      case SyntaxKind::LessOrEqualToken:
+      case SyntaxKind::LessToken:
+      case SyntaxKind::GreaterOrEqualToken:
+      case SyntaxKind::GreaterToken:
         return 3;
       case SyntaxKind::AmpersandAmpersandToken:
         return 2;
@@ -40,6 +44,22 @@ class SyntaxFacts {
       return SyntaxKind::TrueToken;
     else if (text == "false")
       return SyntaxKind::FalseToken;
+    else if (text == "let")
+      return SyntaxKind::LetToken;
+    else if (text == "var")
+      return SyntaxKind::VarToken;
+    else if (text == "mut")
+      return SyntaxKind::MutToken;
+    else if (text == "for")
+      return SyntaxKind::ForToken;
+    else if (text == "if")
+      return SyntaxKind::IfToken;
+    else if (text == "else")
+      return SyntaxKind::ElseToken;
+    else if (text == "while")
+      return SyntaxKind::WhileToken;
+    else if (text == "do")
+      return SyntaxKind::DoToken;
     else
       return SyntaxKind::IdentifierToken;
   }

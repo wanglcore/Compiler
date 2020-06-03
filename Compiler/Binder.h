@@ -1,11 +1,12 @@
 #pragma once
 #include <map>
 #include <stack>
-
+#include"VariableDeclarationSyntax.h"
 #include "BinaryExpressionSyntax.h"
 #include "BoundAllExpression.h"
 #include "BoundExpression.h"
 #include "BoundScope.h"
+#include"ConditionStatement.h"
 #include "BoundStatement.h"
 #include "CompilationUnitSyntax.h"
 #include "ExpressionSyntax.h"
@@ -52,6 +53,8 @@ class Binder {
   std::shared_ptr<BoundScope> scope;
   auto BindExpression(std::shared_ptr<ExpressionSyntax> syntax)
       -> std::shared_ptr<BoundExpression>;
+  auto BindExpression(std::shared_ptr<ExpressionSyntax> syntax,Type type)
+      -> std::shared_ptr<BoundExpression>;
   auto BindLiteralExpression(std::shared_ptr<LiteralExpressionSyntax> syntax)
       -> std::shared_ptr<BoundExpression>;
   auto BindBinaryExpression(std::shared_ptr<BinaryExpressionSyntax> syntax)
@@ -71,6 +74,15 @@ class Binder {
   auto BindBlockStatement(std::shared_ptr<BlockStatementSyntax> syntax)
       -> std::shared_ptr<BoundStatement>;
   auto BindExpressionStatement(std::shared_ptr<ExpressionStatementSyntax> syntax)
+      -> std::shared_ptr<BoundStatement>;
+  auto BindVariableDeclarationStatement(
+      std::shared_ptr<VariableDeclarationSyntax> syntax)
+      -> std::shared_ptr<BoundStatement>;
+  auto BindIfStatement(
+      std::shared_ptr<IfStatementSyntax> syntax)
+      -> std::shared_ptr<BoundStatement>;
+  auto BindElseClauseStatement(
+      std::shared_ptr<ElseClauseSyntax> syntax)
       -> std::shared_ptr<BoundStatement>;
 
  private:

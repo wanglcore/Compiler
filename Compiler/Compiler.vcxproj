@@ -152,6 +152,7 @@
     <ClInclude Include="BoundScope.h" />
     <ClInclude Include="BoundStatement.h" />
     <ClInclude Include="CompilationUnitSyntax.h" />
+    <ClInclude Include="ConditionStatement.h" />
     <ClInclude Include="Evaluator.h" />
     <ClInclude Include="ExpressionSyntax.h" />
     <ClInclude Include="Lexer.h" />
@@ -169,6 +170,7 @@
     <ClInclude Include="TextSpan.h" />
     <ClInclude Include="Type.h" />
     <ClInclude Include="UnaryExpressionSyntax.h" />
+    <ClInclude Include="VariableDeclarationSyntax.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Binder.cpp" />

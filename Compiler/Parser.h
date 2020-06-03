@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "BinaryExpressionSyntax.h"
+#include "ConditionStatement.h"
 #include "ExpressionSyntax.h"
 #include "Lexer.h"
 #include "NameAndAssignmentExpressionSyntax.h"
@@ -13,6 +14,7 @@
 #include "SyntaxToken.h"
 #include "Type.h"
 #include "UnaryExpressionSyntax.h"
+#include "VariableDeclarationSyntax.h"
 namespace Compiler {
 class SyntaxTree;
 class Parser {
@@ -31,6 +33,9 @@ class Parser {
   auto ParseBinaryExpression(int) -> std::shared_ptr<ExpressionSyntax>;
   auto ParseExpression() -> std::shared_ptr<ExpressionSyntax>;
   auto ParseAssignmentExpression() -> std::shared_ptr<ExpressionSyntax>;
+  auto ParseVariableDeclaration() -> std::shared_ptr<StatementSyntax>;
+  auto ParseIfStatement() -> std::shared_ptr<StatementSyntax>;
+  auto ParseElseStatement() -> std::shared_ptr<ElseClauseSyntax>;
   inline auto MatchToken(SyntaxKind _kind) -> std::shared_ptr<SyntaxToken> {
     if (Equals(Current()->Kind, _kind)) {
       return NextToken();

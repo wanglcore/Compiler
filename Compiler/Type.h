@@ -18,8 +18,21 @@ enum class SyntaxKind {
   EndOfFileToken,
   SpaceToken,
   IdentifierToken,
+  LessToken,
+  LessOrEqualToken,
+  GreaterToken,
+  GreaterOrEqualToken,
+
   TrueToken,
   FalseToken,
+  LetToken,
+  VarToken,
+  MutToken,
+  ForToken,
+  ElseToken,
+  IfToken,
+  WhileToken,
+  DoToken,
 
   EqualsToken,
   BangToken,
@@ -37,7 +50,14 @@ enum class SyntaxKind {
   CompilationUnit,
 
   BlockStatement,
-  ExpressionStatement
+  ExpressionStatement,
+  IfStatement,
+  ElseStatement,
+  WhileStatement,
+  DoStatemnt,
+  ForStatement,
+  ElseClause,
+  VariableDeclaration
 };
 
 enum class BoundNodeKind {
@@ -48,7 +68,12 @@ enum class BoundNodeKind {
   VariableExpression,
   AssignmentExpression,
   BlockStatement,
-  ExpressionStatement
+  ExpressionStatement,
+  VariableDeclaration,
+  IfStatement,
+  WhileStatement,
+  DoStatement,
+  ForStatement,
 };
 enum class Type { IntType, BoolType, DefaultType };
 enum class BoundUnaryOperatorKind {
@@ -66,7 +91,11 @@ enum class BoundBinaryOperatorKind {
   LogicalOr,
   Equsls,
   NotEquals,
-  DefaultType
+  DefaultType,
+  Less,
+  Greater,
+  LessOrEqual,
+  GreaterOrEqual
 };
 enum class NodeKind {
   SyntaxNodeNode,
@@ -86,9 +115,13 @@ enum class NodeKind {
 };
 struct VariableSymbol {
   std::string name;
-  Type type;
-  VariableSymbol(std::string _name, Type _type) : name(_name), type(_type) {}
-  VariableSymbol() : name(""), type(Type::DefaultType) {}
+  Type type{Type::DefaultType};
+  bool isReadlyOnly{true};
+  VariableSymbol(std::string _name, Type _type)
+      : name(_name), type(_type), isReadlyOnly(true) {}
+  VariableSymbol(std::string _name, Type _type, bool _readonly)
+      : name(_name), type(_type), isReadlyOnly(_readonly) {}
+  VariableSymbol() : name(""), type(Type::DefaultType), isReadlyOnly(true) {}
 };
 static bool operator<(const VariableSymbol& v1, const VariableSymbol& v2) {
   return v1.name < v2.name;

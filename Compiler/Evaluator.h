@@ -13,6 +13,7 @@
 #include "SyntaxTree.h"
 #include "Type.h"
 #include "UnaryExpressionSyntax.h"
+#include "VariableDeclarationSyntax.h"
 namespace Compiler {
 class Evaluator {
  public:
@@ -24,6 +25,9 @@ class Evaluator {
   Object EvaluateExpression(std::shared_ptr<BoundExpression> _root);
   void EvaluateStatement(std::shared_ptr<BoundStatement> _root);
   void EvaluateBlockStatement(std::shared_ptr<BoundBlockStatement> statement);
+  void EvaluateIfStatement(std::shared_ptr<BoundIfStatement> statement);
+  void EvaluateVariableDeclaration(
+      std::shared_ptr<BoundVariableDeclaration> statement);
   void EvaluateExpressionStatement(
       std::shared_ptr<BoundExpressionStatement> statement);
   // std::shared_ptr<BoundExpression> root;

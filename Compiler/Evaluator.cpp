@@ -11,6 +11,13 @@ void Evaluator::EvaluateStatement(std::shared_ptr<BoundStatement> statement) {
       EvaluateBlockStatement(
           std::dynamic_pointer_cast<BoundBlockStatement>(statement));
       break;
+    case BoundNodeKind::VariableDeclaration:
+      EvaluateVariableDeclaration(
+          std::dynamic_pointer_cast<BoundVariableDeclaration>(statement));
+      break;
+    case BoundNodeKind::IfStatement:
+      EvaluateIfStatement(
+          std::dynamic_pointer_cast<BoundIfStatement>(statement));
     case BoundNodeKind::ExpressionStatement:
       EvaluateExpressionStatement(
           std::dynamic_pointer_cast<BoundExpressionStatement>(statement));
@@ -25,6 +32,24 @@ void Evaluator::EvaluateBlockStatement(
   for (auto u : statement->statements) {
     EvaluateStatement(u);
   }
+}
+
+void Evaluator::EvaluateIfStatement(
+    std::shared_ptr<BoundIfStatement> statement) {
+  auto value = EvaluateExpression(statement->condition);
+  auto condition = std::get<bool>(value);
+  if (condition) {
+    EvaluateStatement(statement->thenstatement);
+  } else if (statement->elsestatement != nullptr) {
+    EvaluateStatement(statement->elsestatement);
+  }
+}
+
+void Evaluator::EvaluateVariableDeclaration(
+    std::shared_ptr<BoundVariableDeclaration> statement) {
+  auto value = EvaluateExpression(statement->initializer);
+  variables[statement->variable] = value;
+  lastValue = value;
 }
 
 void Evaluator::EvaluateExpressionStatement(
@@ -76,6 +101,14 @@ Object Compiler::Evaluator::EvaluateExpression(
         return std::get<0>(left) * std::get<0>(right);
       case BoundBinaryOperatorKind::Division:
         return std::get<0>(left) / std::get<0>(right);
+      case BoundBinaryOperatorKind::Less:
+        return std::get<0>(left) < std::get<0>(right);
+      case BoundBinaryOperatorKind::LessOrEqual:
+        return std::get<0>(left) <= std::get<0>(right);
+      case BoundBinaryOperatorKind::Greater:
+        return std::get<0>(left) > std::get<0>(right);
+      case BoundBinaryOperatorKind::GreaterOrEqual:
+        return std::get<0>(left) >= std::get<0>(right);
       case BoundBinaryOperatorKind::LogicalAnd:
         return std::get<1>(left) && std::get<1>(right);
       case BoundBinaryOperatorKind::LogicalOr:

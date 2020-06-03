@@ -28,4 +28,27 @@ class BoundExpressionStatement final : public BoundStatement {
   std::shared_ptr<BoundExpression> expression;
   virtual bool EqualsKind(BoundNodeKind other) { return other == Kind; }
 };
+class BoundVariableDeclaration final : public BoundStatement {
+ public:
+  BoundVariableDeclaration(VariableSymbol _variable,
+                           std::shared_ptr<BoundExpression> _initializer)
+      : BoundStatement(BoundNodeKind::VariableDeclaration),
+        variable(_variable),
+        initializer(_initializer) {}
+  VariableSymbol variable;
+  std::shared_ptr<BoundExpression> initializer;
+};
+
+class BoundIfStatement final : public BoundStatement {
+ public:
+  BoundIfStatement(std::shared_ptr<BoundExpression> _condition,
+                   std::shared_ptr<BoundStatement> _thenstatement,
+                   std::shared_ptr<BoundStatement> _elsestatement)
+      : BoundStatement(BoundNodeKind::IfStatement),
+        thenstatement(_thenstatement),
+        elsestatement(_elsestatement),
+        condition(_condition) {}
+  std::shared_ptr<BoundStatement> thenstatement, elsestatement;
+  std::shared_ptr<BoundExpression> condition;
+};
 }  // namespace Compiler

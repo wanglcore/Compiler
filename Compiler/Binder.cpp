@@ -25,6 +25,14 @@ auto Binder::BindExpression(std::shared_ptr<ExpressionSyntax> syntax)
       return nullptr;
   }
 }
+auto Binder::BindExpression(std::shared_ptr<ExpressionSyntax> syntax, Type type)
+    -> std::shared_ptr<BoundExpression> {
+  auto result = BindExpression(syntax);
+  if (result->type != type) {
+    // TODO
+  }
+  return result;
+}
 auto Binder::BindLiteralExpression(
     std::shared_ptr<LiteralExpressionSyntax> syntax)
     -> std::shared_ptr<BoundExpression> {
@@ -64,7 +72,7 @@ auto Binder::BindNameExpression(std::shared_ptr<NameExpressionSyntax> syntax)
       value != variables.end()) {
     return std::make_shared<BoundVariableExpression>(value->first);
   }*/
-  return nullptr;
+  return std::make_shared<BoundLiteralExpression>(0, Type::IntType);
 }
 auto Binder::BindAssignmentExpression(
     std::shared_ptr<AssignmentExpressionSyntax> syntax)
@@ -74,8 +82,15 @@ auto Binder::BindAssignmentExpression(
   // auto variable = VariableSymbol(name, boundexpression->type);
   VariableSymbol variable;
   if (!scope->TryLookUp(name, variable)) {
-    variable = VariableSymbol(name, boundexpression->type);
-    scope->TryDeclare(variable);
+    /*variable = VariableSymbol(name, boundexpression->type);
+    scope->TryDeclare(variable);*/
+    return boundexpression;
+  }
+  if (variable.isReadlyOnly) {
+    std::cout << "variable is readonly\n";
+  }
+  if (boundexpression->type != variable.type) {
+    return boundexpression;
   }
   return std::make_shared<BoundAssignmentExpression>(variable, boundexpression);
   // if (scope->TryDeclare(variable)) {
@@ -113,6 +128,9 @@ auto Binder::BindStatement(std::shared_ptr<StatementSyntax> statement)
     case SyntaxKind::ExpressionStatement:
       return BindExpressionStatement(
           std::dynamic_pointer_cast<ExpressionStatementSyntax>(statement));
+    case SyntaxKind::VariableDeclaration:
+      return BindVariableDeclarationStatement(
+          std::dynamic_pointer_cast<VariableDeclarationSyntax>(statement));
     default:
       break;
   }
@@ -120,10 +138,12 @@ auto Binder::BindStatement(std::shared_ptr<StatementSyntax> statement)
 auto Binder::BindBlockStatement(std::shared_ptr<BlockStatementSyntax> syntax)
     -> std::shared_ptr<BoundStatement> {
   std::vector<std::shared_ptr<BoundStatement>> _statements;
+  scope = std::make_shared<BoundScope>(scope);
   for (auto _statement : syntax->statements) {
     auto state = BindStatement(_statement);
     _statements.push_back(state);
   }
+  scope = scope->parent;
   return std::make_shared<BoundBlockStatement>(_statements);
 }
 auto Binder::BindExpressionStatement(
@@ -131,6 +151,27 @@ auto Binder::BindExpressionStatement(
     -> std::shared_ptr<BoundStatement> {
   auto expression = BindExpression(syntax->expression);
   return std::make_shared<BoundExpressionStatement>(expression);
+}
+auto Binder::BindVariableDeclarationStatement(
+    std::shared_ptr<VariableDeclarationSyntax> syntax)
+    -> std::shared_ptr<BoundStatement> {
+  auto name = syntax->identifier->text;
+  auto isReadOnly = syntax->keyword->Kind == SyntaxKind::LetToken;
+  auto initializer = BindExpression(syntax->initializer);
+  auto variable = VariableSymbol(name, initializer->type, isReadOnly);
+  if (scope->TryDeclare(variable)) {
+  }
+  return std::make_shared<BoundVariableDeclaration>(variable, initializer);
+}
+auto Binder::BindIfStatement(std::shared_ptr<IfStatementSyntax> syntax)
+    -> std::shared_ptr<BoundStatement> {
+  auto condition = BindExpression(syntax->condition, Type::BoolType);
+  auto statement = BindStatement(syntax->thenstatement);
+  auto elseStatement = syntax->elseClause == nullptr
+                           ? nullptr
+                           : BindElseClauseStatement(syntax->elseClause);
+  return std::make_shared<BoundIfStatement>(condition, statement,
+                                            elseStatement);
 }
 //
 // inline BoundUnaryOperatorKind Binder::BindUnaryOperatorKind(SyntaxKind kind,
