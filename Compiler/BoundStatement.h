@@ -51,4 +51,31 @@ class BoundIfStatement final : public BoundStatement {
   std::shared_ptr<BoundStatement> thenstatement, elsestatement;
   std::shared_ptr<BoundExpression> condition;
 };
+class BoundWhileStatement final : public BoundStatement {
+ public:
+  BoundWhileStatement(std::shared_ptr<BoundExpression> _condition,
+                      std::shared_ptr<BoundStatement> _statement)
+      : BoundStatement(BoundNodeKind::WhileStatement),
+        statement(_statement),
+        condition(_condition) {}
+  std::shared_ptr<BoundStatement> statement;
+  std::shared_ptr<BoundExpression> condition;
+};
+class BoundForStatement final : public BoundStatement {
+ public:
+  BoundForStatement(VariableSymbol _variable,
+                    std::shared_ptr<BoundExpression> _iterbegin,
+                    std::shared_ptr<BoundExpression> _iterend,
+                    std::shared_ptr<BoundExpression> _iterstep,
+                    std::shared_ptr<BoundStatement> _statement)
+      : BoundStatement(BoundNodeKind::ForStatement),
+        variable(_variable),
+        iterbegin(_iterbegin),
+        iterend(_iterend),
+        iterstep(_iterstep),
+        statement(_statement) {}
+  VariableSymbol variable;
+  std::shared_ptr<BoundExpression> iterbegin, iterend, iterstep;
+  std::shared_ptr<BoundStatement> statement;
+};
 }  // namespace Compiler

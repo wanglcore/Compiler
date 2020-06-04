@@ -7,6 +7,12 @@ enum class SyntaxKind {
   DefaultToken,
   NumberToken,
   PlusToken,
+  PlusEqualsToken,
+  MinusEqualsToken,
+  PlusPlusToken,
+  MinusMinusToken,
+  StarEqualsToken,
+  SlashEqualsToken,
   MinusToken,
   StarToken,
   SlashToken,
@@ -22,6 +28,7 @@ enum class SyntaxKind {
   LessOrEqualToken,
   GreaterToken,
   GreaterOrEqualToken,
+  ColonToken,
 
   TrueToken,
   FalseToken,
@@ -33,6 +40,7 @@ enum class SyntaxKind {
   IfToken,
   WhileToken,
   DoToken,
+  InToken,
 
   EqualsToken,
   BangToken,
@@ -40,6 +48,10 @@ enum class SyntaxKind {
   PipePipeToken,
   EqualsEqualsToken,
   NotEqualsToken,
+  PipeToken,
+  AmpersandToken,
+  TiledeToken,
+  HatToken,
 
   LiteralExpression,
   BinaryExpression,
@@ -80,11 +92,14 @@ enum class BoundUnaryOperatorKind {
   Identity,
   Negation,
   DefaultType,
-  LogicalNegation
+  LogicalNegation,
+  OnesComplememt
 };
 enum class BoundBinaryOperatorKind {
   Addition,
+  AdditionEqual,
   Subtraction,
+  SubtractionEqual,
   Multiplication,
   Division,
   LogicalAnd,
@@ -95,7 +110,10 @@ enum class BoundBinaryOperatorKind {
   Less,
   Greater,
   LessOrEqual,
-  GreaterOrEqual
+  GreaterOrEqual,
+  BitWiseAnd,
+  BitWiseOr,
+  BitWiseXor
 };
 enum class NodeKind {
   SyntaxNodeNode,

@@ -34,7 +34,47 @@ class IfStatementSyntax final : public StatementSyntax {
   // stdtoken openParenthesis;
   // stdtoken closeParenthesis;
   stdexp condition;
-  std::shared_ptr<ElseClauseSyntax> elseClause;
   stdstate thenstatement;
+  std::shared_ptr<ElseClauseSyntax> elseClause;
+};
+class WhileStatementSyntax final : public StatementSyntax {
+ public:
+  WhileStatementSyntax(stdtoken _whileKeyword, stdexp _condition,
+                       stdstate _statement)
+      : StatementSyntax(SyntaxKind::WhileStatement),
+        whilekeyword(_whileKeyword),
+        // openParenthesis(_openParenthesis),
+        condition(_condition),
+        statement(_statement) {}
+  // closeParenthesis(_closeParenthesis),
+  stdtoken whilekeyword;
+  // stdtoken openParenthesis;
+  // stdtoken closeParenthesis;
+  stdexp condition;
+  stdstate statement;
+};
+class ForStatementSyntax final : public StatementSyntax {
+ public:
+  ForStatementSyntax(stdtoken _forKeyword, stdtoken _identifier,
+                     stdtoken _inToken, stdexp _iterbegin, stdexp _iterend,
+                     stdexp _iterstep, stdstate _statement)
+      : StatementSyntax(SyntaxKind::ForStatement),
+        forkeyword(_forKeyword),
+        identifier(_identifier),
+        inToken(_inToken),
+        iterbegin(_iterbegin),
+        iterend(_iterend),
+        iterstep(_iterstep),
+        // openParenthesis(_openParenthesis),
+        statement(_statement) {}
+  // closeParenthesis(_closeParenthesis),
+  stdtoken forkeyword;
+  stdtoken identifier;
+  stdtoken inToken;
+  stdexp iterbegin, iterend, iterstep;
+  // stdtoken openParenthesis;
+  // stdtoken closeParenthesis;
+  stdexp condition;
+  stdstate statement;
 };
 }  // namespace Compiler

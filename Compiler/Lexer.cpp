@@ -40,12 +40,20 @@ std::shared_ptr<SyntaxToken> Lexer::NextToken() {
       position += 2;
       return std::make_shared<SyntaxToken>(SyntaxKind::PipePipeToken,
                                            position - 2, "||");
+    } else {
+      ++position;
+      return std::make_shared<SyntaxToken>(SyntaxKind::PipeToken, position - 1,
+                                           "|");
     }
   } else if (Current() == '&') {
     if (LookHead() == '&') {
       position += 2;
       return std::make_shared<SyntaxToken>(SyntaxKind::AmpersandAmpersandToken,
                                            position - 2, "&&");
+    } else {
+      ++position;
+      return std::make_shared<SyntaxToken>(SyntaxKind::AmpersandToken,
+                                           position - 1, "&");
     }
   } else if (Current() == '=') {
     if (LookHead() == '=') {
@@ -87,11 +95,39 @@ std::shared_ptr<SyntaxToken> Lexer::NextToken() {
       return std::make_shared<SyntaxToken>(SyntaxKind::BangToken, position - 1,
                                            "!");
     }
+  } else if (Current() == '^') {
+    return std::make_shared<SyntaxToken>(SyntaxKind::HatToken, ++position, "^");
+  } else if (Current() == '~') {
+    return std::make_shared<SyntaxToken>(SyntaxKind::TiledeToken, ++position, "~");
+  }
+  else if (Current() == ':') {
+    return std::make_shared<SyntaxToken>(SyntaxKind::ColonToken, ++position,
+                                         ":");
   } else if (Current() == '+') {
-    return std::make_shared<SyntaxToken>(SyntaxKind::PlusToken, ++position,
+    if (LookHead() == '=') {
+      position += 2;
+      return std::make_shared<SyntaxToken>(SyntaxKind::PlusEqualsToken,
+                                           position - 2, "+=");
+    } else if (LookHead() == '+') {
+      position += 2;
+      return std::make_shared<SyntaxToken>(SyntaxKind::PlusPlusToken,
+                                           position - 2, "++");
+    }
+    position++;
+    return std::make_shared<SyntaxToken>(SyntaxKind::PlusToken, position - 1,
                                          "+");
   } else if (Current() == '-') {
-    return std::make_shared<SyntaxToken>(SyntaxKind::MinusToken, ++position,
+    if (LookHead() == '=') {
+      position += 2;
+      return std::make_shared<SyntaxToken>(SyntaxKind::MinusEqualsToken,
+                                           position - 2, "-=");
+    } else if (LookHead() == '-') {
+      position += 2;
+      return std::make_shared<SyntaxToken>(SyntaxKind::MinusMinusToken,
+                                           position - 2, "--");
+    }
+    position++;
+    return std::make_shared<SyntaxToken>(SyntaxKind::MinusToken, position - 1,
                                          "-");
   } else if (Current() == '*') {
     return std::make_shared<SyntaxToken>(SyntaxKind::StarToken, ++position,

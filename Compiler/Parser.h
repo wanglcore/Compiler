@@ -35,6 +35,8 @@ class Parser {
   auto ParseAssignmentExpression() -> std::shared_ptr<ExpressionSyntax>;
   auto ParseVariableDeclaration() -> std::shared_ptr<StatementSyntax>;
   auto ParseIfStatement() -> std::shared_ptr<StatementSyntax>;
+  auto ParseWhileStatement() -> std::shared_ptr<StatementSyntax>;
+  auto ParseForStatement() -> std::shared_ptr<StatementSyntax>;
   auto ParseElseStatement() -> std::shared_ptr<ElseClauseSyntax>;
   inline auto MatchToken(SyntaxKind _kind) -> std::shared_ptr<SyntaxToken> {
     if (Equals(Current()->Kind, _kind)) {

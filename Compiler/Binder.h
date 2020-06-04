@@ -1,20 +1,21 @@
 #pragma once
 #include <map>
 #include <stack>
-#include"VariableDeclarationSyntax.h"
+
 #include "BinaryExpressionSyntax.h"
 #include "BoundAllExpression.h"
 #include "BoundExpression.h"
 #include "BoundScope.h"
-#include"ConditionStatement.h"
 #include "BoundStatement.h"
 #include "CompilationUnitSyntax.h"
+#include "ConditionStatement.h"
 #include "ExpressionSyntax.h"
 #include "LiteralExpressionSyntax.h"
 #include "NameAndAssignmentExpressionSyntax.h"
 #include "Operator.h"
 #include "ParenthesizedExpressionSyntax.h"
 #include "UnaryExpressionSyntax.h"
+#include "VariableDeclarationSyntax.h"
 namespace Compiler {
 class Binder {
  public:
@@ -51,9 +52,9 @@ class Binder {
     return parent;
   }
   std::shared_ptr<BoundScope> scope;
-  auto BindExpression(std::shared_ptr<ExpressionSyntax> syntax)
+  auto BindExpression(std::shared_ptr<ExpressionSyntax> syntax, SyntaxKind kind)
       -> std::shared_ptr<BoundExpression>;
-  auto BindExpression(std::shared_ptr<ExpressionSyntax> syntax,Type type)
+  auto BindExpression(std::shared_ptr<ExpressionSyntax> syntax, Type type)
       -> std::shared_ptr<BoundExpression>;
   auto BindLiteralExpression(std::shared_ptr<LiteralExpressionSyntax> syntax)
       -> std::shared_ptr<BoundExpression>;
@@ -61,7 +62,7 @@ class Binder {
       -> std::shared_ptr<BoundExpression>;
   auto BindUnaryExpression(std::shared_ptr<UnaryExpressionSyntax> syntax)
       -> std::shared_ptr<BoundExpression>;
-  auto BindNameExpression(std::shared_ptr<NameExpressionSyntax> syntax)
+  auto BindNameExpression(std::shared_ptr<NameExpressionSyntax> syntax,SyntaxKind kind)
       -> std::shared_ptr<BoundExpression>;
   auto BindAssignmentExpression(
       std::shared_ptr<AssignmentExpressionSyntax> syntax)
@@ -73,17 +74,21 @@ class Binder {
       -> std::shared_ptr<BoundStatement>;
   auto BindBlockStatement(std::shared_ptr<BlockStatementSyntax> syntax)
       -> std::shared_ptr<BoundStatement>;
-  auto BindExpressionStatement(std::shared_ptr<ExpressionStatementSyntax> syntax)
+  auto BindExpressionStatement(
+      std::shared_ptr<ExpressionStatementSyntax> syntax)
       -> std::shared_ptr<BoundStatement>;
   auto BindVariableDeclarationStatement(
       std::shared_ptr<VariableDeclarationSyntax> syntax)
       -> std::shared_ptr<BoundStatement>;
-  auto BindIfStatement(
-      std::shared_ptr<IfStatementSyntax> syntax)
+  auto BindIfStatement(std::shared_ptr<IfStatementSyntax> syntax)
       -> std::shared_ptr<BoundStatement>;
-  auto BindElseClauseStatement(
-      std::shared_ptr<ElseClauseSyntax> syntax)
+  auto BindWhileStatement(std::shared_ptr<WhileStatementSyntax> syntax)
       -> std::shared_ptr<BoundStatement>;
+  auto BindForStatement(std::shared_ptr<ForStatementSyntax> syntax)
+      -> std::shared_ptr<BoundStatement>;
+  // auto BindElseClauseStatement(
+  //    std::shared_ptr<ElseClauseSyntax> syntax)
+  //    -> std::shared_ptr<BoundStatement>;
 
  private:
   // BoundUnaryOperatorKind BindUnaryOperatorKind(SyntaxKind kind, Type type);

@@ -48,6 +48,10 @@ auto Compiler::Parser::ParseStatement() -> std::shared_ptr<StatementSyntax> {
     return ParseVariableDeclaration();
   } else if (Current()->Kind == SyntaxKind::IfToken) {
     return ParseIfStatement();
+  } else if (Current()->Kind == SyntaxKind::WhileToken) {
+    return ParseWhileStatement();
+  } else if (Current()->Kind == SyntaxKind::ForToken) {
+    return ParseForStatement();
   }
   return ParseExpressionStatement();
 }
@@ -58,8 +62,12 @@ auto Compiler::Parser::ParseBlockStatement()
   auto openBraceToken = MatchToken(SyntaxKind::OpenBraceToken);
   while (Current()->Kind != SyntaxKind::EndOfFileToken &&
          Current()->Kind != SyntaxKind::CloseBraceToken) {
+    auto startToken = Current();
     auto _statement = ParseStatement();
     _statements.push_back(_statement);
+    if (Current() == startToken) {
+      NextToken();
+    }
   }
   auto closeBraceToken = MatchToken(SyntaxKind::CloseBraceToken);
   return std::make_shared<BlockStatementSyntax>(openBraceToken, _statements,
@@ -103,6 +111,7 @@ auto Compiler::Parser::ParseExpressionStatement()
 
 auto Compiler::Parser::ParsePrimaryExpression()
     -> std::shared_ptr<ExpressionSyntax> {
+  auto temp = Current()->Kind;
   if (Equals(Current()->Kind, SyntaxKind::OpenParenthesisToken)) {
     auto left = NextToken();
     auto expression = ParseBinaryExpression(0);
@@ -120,6 +129,7 @@ auto Compiler::Parser::ParsePrimaryExpression()
     auto identifier = NextToken();
     return std::make_shared<NameExpressionSyntax>(identifier);
   }
+
   auto numberToken = MatchToken(SyntaxKind::NumberToken);
   return std::make_shared<LiteralExpressionSyntax>(std::move(numberToken));
 }
@@ -161,8 +171,8 @@ auto Compiler::Parser::ParseExpression() -> std::shared_ptr<ExpressionSyntax> {
 
 auto Compiler::Parser::ParseAssignmentExpression()
     -> std::shared_ptr<ExpressionSyntax> {
-  if (Peek(0)->Kind == SyntaxKind::IdentifierToken &&
-      Peek(1)->Kind == SyntaxKind::EqualsToken) {
+  auto tag = Peek(1)->Kind == SyntaxKind::EqualsToken;
+  if (Peek(0)->Kind == SyntaxKind::IdentifierToken && tag) {
     auto identifierToken = NextToken();
     auto equalToken = NextToken();
     auto expression = ParseAssignmentExpression();
@@ -175,11 +185,13 @@ auto Compiler::Parser::ParseAssignmentExpression()
 auto Compiler::Parser::ParseVariableDeclaration()
     -> std::shared_ptr<StatementSyntax> {
   auto keyword = NextToken();
+  auto mutkeyword =
+      (Current()->Kind == SyntaxKind::MutToken) ? NextToken() : nullptr;
   auto identifier = NextToken();
   auto equalsToken = NextToken();
   auto initializer = ParseExpression();
-  return std::make_shared<VariableDeclarationSyntax>(keyword, identifier,
-                                                     equalsToken, initializer);
+  return std::make_shared<VariableDeclarationSyntax>(
+      keyword, mutkeyword, identifier, equalsToken, initializer);
 }
 
 auto Compiler::Parser::ParseIfStatement() -> std::shared_ptr<StatementSyntax> {
@@ -189,6 +201,33 @@ auto Compiler::Parser::ParseIfStatement() -> std::shared_ptr<StatementSyntax> {
   auto elseclause = ParseElseStatement();
   return std::make_shared<IfStatementSyntax>(ifkeyword, condition, statement,
                                              elseclause);
+}
+
+auto Compiler::Parser::ParseWhileStatement()
+    -> std::shared_ptr<StatementSyntax> {
+  auto whilekeyword = NextToken();
+  auto condition = ParseExpression();
+  auto statement = ParseStatement();
+  return std::make_shared<WhileStatementSyntax>(whilekeyword, condition,
+                                                statement);
+}
+
+auto Compiler::Parser::ParseForStatement() -> std::shared_ptr<StatementSyntax> {
+  auto forkeyword = NextToken();
+  auto identifier = NextToken();
+  auto inkeyword = NextToken();
+  auto iterbegin = ParseExpression();
+  auto colontoken1 = NextToken();
+  auto iterend = ParseExpression();
+  std::shared_ptr<ExpressionSyntax> iterstep = nullptr;
+  if (Current()->Kind == SyntaxKind::ColonToken) {
+    auto colontoken2 = NextToken();
+    iterstep = ParseExpression();
+  }
+  auto statement = ParseStatement();
+  return std::make_shared<ForStatementSyntax>(forkeyword, identifier, inkeyword,
+                                              iterbegin, iterend, iterstep,
+                                              statement);
 }
 
 auto Compiler::Parser::ParseElseStatement()

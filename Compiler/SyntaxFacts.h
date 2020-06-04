@@ -8,7 +8,8 @@ class SyntaxFacts {
       case SyntaxKind::PlusToken:
       case SyntaxKind::MinusToken:
       case SyntaxKind::BangToken:
-        return 6;
+      case SyntaxKind::TiledeToken:
+        return 7;
         break;
       default:
         return 0;
@@ -17,6 +18,9 @@ class SyntaxFacts {
   }
   static int GetBinaryOperatorPrecedence(SyntaxKind kind) {
     switch (kind) {
+      case SyntaxKind::PlusEqualsToken:
+      case SyntaxKind::MinusEqualsToken:
+          return 6;
       case Compiler::SyntaxKind::StarToken:
       case Compiler::SyntaxKind::SlashToken:
         return 5;
@@ -31,8 +35,11 @@ class SyntaxFacts {
       case SyntaxKind::GreaterToken:
         return 3;
       case SyntaxKind::AmpersandAmpersandToken:
+      case SyntaxKind::AmpersandToken:
         return 2;
       case SyntaxKind::PipePipeToken:
+      case SyntaxKind::PipeToken:
+      case SyntaxKind::HatToken:
         return 1;
       default:
         return 0;

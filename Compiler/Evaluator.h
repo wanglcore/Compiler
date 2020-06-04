@@ -26,6 +26,8 @@ class Evaluator {
   void EvaluateStatement(std::shared_ptr<BoundStatement> _root);
   void EvaluateBlockStatement(std::shared_ptr<BoundBlockStatement> statement);
   void EvaluateIfStatement(std::shared_ptr<BoundIfStatement> statement);
+  void EvaluateWhileStatement(std::shared_ptr<BoundWhileStatement> statement);
+  void EvaluateForStatement(std::shared_ptr<BoundForStatement> statement);
   void EvaluateVariableDeclaration(
       std::shared_ptr<BoundVariableDeclaration> statement);
   void EvaluateExpressionStatement(

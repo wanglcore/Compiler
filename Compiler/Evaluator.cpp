@@ -18,9 +18,18 @@ void Evaluator::EvaluateStatement(std::shared_ptr<BoundStatement> statement) {
     case BoundNodeKind::IfStatement:
       EvaluateIfStatement(
           std::dynamic_pointer_cast<BoundIfStatement>(statement));
+      break;
     case BoundNodeKind::ExpressionStatement:
       EvaluateExpressionStatement(
           std::dynamic_pointer_cast<BoundExpressionStatement>(statement));
+      break;
+    case BoundNodeKind::WhileStatement:
+      EvaluateWhileStatement(
+          std::dynamic_pointer_cast<BoundWhileStatement>(statement));
+      break;
+    case BoundNodeKind::ForStatement:
+      EvaluateForStatement(
+          std::dynamic_pointer_cast<BoundForStatement>(statement));
       break;
     default:
       break;
@@ -45,6 +54,38 @@ void Evaluator::EvaluateIfStatement(
   }
 }
 
+void Evaluator::EvaluateWhileStatement(
+    std::shared_ptr<BoundWhileStatement> statement) {
+  while (std::get<bool>(EvaluateExpression(statement->condition))) {
+    EvaluateStatement(statement->statement);
+  }
+}
+
+void Evaluator::EvaluateForStatement(
+    std::shared_ptr<BoundForStatement> statement) {
+  auto iterbegin = std::get<int>(EvaluateExpression(statement->iterbegin));
+  auto iterend = std::get<int>(EvaluateExpression(statement->iterend));
+  auto iterstep = std::get<int>(EvaluateExpression(statement->iterstep));
+  if (iterstep == 0) {
+    if (iterbegin < iterend) {
+      iterstep = 1;
+    } else {
+      iterstep = -1;
+    }
+  }
+  if (iterbegin < iterend) {
+    for (int i = iterbegin; i < iterend; i += iterstep) {
+      variables[statement->variable] = i;
+      EvaluateStatement(statement->statement);
+    }
+  } else {
+    for (int i = iterbegin; i > iterend; i += iterstep) {
+      variables[statement->variable] = i;
+      EvaluateStatement(statement->statement);
+    }
+  }
+}
+
 void Evaluator::EvaluateVariableDeclaration(
     std::shared_ptr<BoundVariableDeclaration> statement) {
   auto value = EvaluateExpression(statement->initializer);
@@ -59,6 +100,9 @@ void Evaluator::EvaluateExpressionStatement(
 
 Object Compiler::Evaluator::EvaluateExpression(
     std::shared_ptr<BoundExpression> _root) {
+  if (_root == nullptr) {  //当对象为空时返回0值
+    return 0;
+  }
   if (_root->EqualsKind(BoundNodeKind::LiteralExpression)) {
     auto literalExpressionSyntax =
         std::dynamic_pointer_cast<BoundLiteralExpression>(_root);
@@ -75,6 +119,10 @@ Object Compiler::Evaluator::EvaluateExpression(
         return std::get<0>(val);
       case BoundUnaryOperatorKind::LogicalNegation:
         return !std::get<1>(val);
+      case BoundUnaryOperatorKind::OnesComplememt:
+        return ~std::get<int>(val);
+      default:
+        return 0;
     }
   }
   if (_root->EqualsKind(BoundNodeKind::VariableExpression)) {
@@ -84,6 +132,7 @@ Object Compiler::Evaluator::EvaluateExpression(
     auto assignment =
         std::dynamic_pointer_cast<BoundAssignmentExpression>(_root);
     auto value = EvaluateExpression(assignment->expression);
+
     variables[assignment->symbol] = value;
     // variables[assignment] = {value, static_cast<Type>(value.index())};
     return value;
@@ -117,8 +166,40 @@ Object Compiler::Evaluator::EvaluateExpression(
         return left == right;
       case BoundBinaryOperatorKind::NotEquals:
         return left != right;
-      default:
-        break;
+      case BoundBinaryOperatorKind::BitWiseAnd:
+        if (left.index() == 1 && right.index() == 1) {
+          return std::get<1>(left) & std::get<1>(right);
+        } else {
+          return std::get<0>(left) & std::get<0>(right);
+        }
+      case BoundBinaryOperatorKind::BitWiseOr:
+        if (left.index() == 1 && right.index() == 1) {
+          return std::get<1>(left) | std::get<1>(right);
+        } else {
+          return std::get<0>(left) | std::get<0>(right);
+        }
+      case BoundBinaryOperatorKind::BitWiseXor:
+        if (left.index() == 1 && right.index() == 1) {
+          return std::get<1>(left) ^ std::get<1>(right);
+        } else {
+          return std::get<0>(left) ^ std::get<0>(right);
+        }
+    }
+    if (binaryExpressionSyntax->op->kind ==
+        BoundBinaryOperatorKind::AdditionEqual) {
+      auto variable = std::dynamic_pointer_cast<BoundVariableExpression>(
+          binaryExpressionSyntax->left);
+      auto iter = variables.find(variable->symbol);
+      iter->second = (std::get<int>(iter->second) + std::get<int>(right));
+      return iter->second;
+    }
+    if (binaryExpressionSyntax->op->kind ==
+        BoundBinaryOperatorKind::SubtractionEqual) {
+      auto variable = std::dynamic_pointer_cast<BoundVariableExpression>(
+          binaryExpressionSyntax->left);
+      auto iter = variables.find(variable->symbol);
+      iter->second = (std::get<int>(iter->second) - std::get<int>(right));
+      return iter->second;
     }
   }
   /* if (Equals(_root->Kind, BoundNodeKind::UnaryExpression)) {
