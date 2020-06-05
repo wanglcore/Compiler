@@ -11,7 +11,6 @@
 #include "ConditionStatement.h"
 #include "ExpressionSyntax.h"
 #include "Operator.h"
-#include "VariableDeclarationSyntax.h"
 namespace Compiler {
 class Binder {
 public:

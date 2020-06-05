@@ -11,7 +11,6 @@
 #include "Symbol.h"
 #include "SyntaxTree.h"
 #include "Type.h"
-#include "VariableDeclarationSyntax.h"
 namespace Compiler {
 class Evaluator {
 public:

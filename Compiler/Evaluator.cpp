@@ -86,7 +86,9 @@ void Evaluator::EvaluateForStatement(
   }
 }
 Object Evaluator::EvaluateCallExpression(
-    std::shared_ptr<BoundCallExpression> statement) {}
+    std::shared_ptr<BoundCallExpression> statement) {
+    return 0;
+}
 
 void Evaluator::EvaluateVariableDeclaration(
     std::shared_ptr<BoundVariableDeclaration> statement) {

@@ -143,7 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BinaryExpressionSyntax.h" />
+    <ClInclude Include="AllExpressionSyntax.h" />
     <ClInclude Include="Binder.h" />
     <ClInclude Include="BoundExpression.h" />
     <ClInclude Include="BoundNode.h" />
@@ -156,10 +156,8 @@
     <ClInclude Include="Evaluator.h" />
     <ClInclude Include="ExpressionSyntax.h" />
     <ClInclude Include="Lexer.h" />
-    <ClInclude Include="LiteralExpressionSyntax.h" />
-    <ClInclude Include="NameAndAssignmentExpressionSyntax.h" />
+    <ClInclude Include="MemberSyntax.h" />
     <ClInclude Include="Operator.h" />
-    <ClInclude Include="ParenthesizedExpressionSyntax.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="SourceText.h" />
     <ClInclude Include="Statement.h" />
@@ -170,8 +168,6 @@
     <ClInclude Include="SyntaxTree.h" />
     <ClInclude Include="TextSpan.h" />
     <ClInclude Include="Type.h" />
-    <ClInclude Include="UnaryExpressionSyntax.h" />
-    <ClInclude Include="VariableDeclarationSyntax.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Binder.cpp" />

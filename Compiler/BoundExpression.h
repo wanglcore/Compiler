@@ -1,6 +1,7 @@
 #pragma once
 #include "BoundNode.h"
 #include "Type.h"
+#include"Symbol.h"
 namespace Compiler {
 class BoundExpression : public BoundNode {
 public:

@@ -24,16 +24,10 @@
     <ClInclude Include="SyntaxToken.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ParenthesizedExpressionSyntax.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SyntaxTree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BinaryExpressionSyntax.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ExpressionSyntax.h">
@@ -43,12 +37,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Evaluator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LiteralExpressionSyntax.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UnaryExpressionSyntax.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SyntaxFacts.h">
@@ -75,9 +63,6 @@
     <ClInclude Include="TextSpan.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NameAndAssignmentExpressionSyntax.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SourceText.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -93,13 +78,16 @@
     <ClInclude Include="BoundStatement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VariableDeclarationSyntax.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ConditionStatement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Symbol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AllExpressionSyntax.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MemberSyntax.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

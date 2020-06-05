@@ -1,4 +1,3 @@
-#include "LiteralExpressionSyntax.h"
 #include "SyntaxTree.h"
 // Compiler::Parser::Parser(std::string _text) {
 //  auto lexer = std::make_unique<Lexer>(_text);
@@ -124,7 +123,7 @@ auto Compiler::Parser::ParsePrimaryExpression()
     auto keyword = NextToken();
     auto _value = keyword->Kind == SyntaxKind::TrueToken;
     return std::make_shared<LiteralExpressionSyntax>(keyword, _value,
-                                                     Type::BoolType);
+                                                     BaseType::Bool);
   } else if (Equals(Current()->Kind, SyntaxKind::IdentifierToken)) {
     auto identifier = NextToken();
     return std::make_shared<NameExpressionSyntax>(identifier);
@@ -133,7 +132,7 @@ auto Compiler::Parser::ParsePrimaryExpression()
     return std::make_shared<LiteralExpressionSyntax>(stringToken);
   } else if (Equals(Current()->Kind, SyntaxKind::NumberToken)) {
     auto numberToken = MatchToken(SyntaxKind::NumberToken);
-    return std::make_shared<LiteralExpressionSyntax>(std::move(numberToken));
+    return std::make_shared<LiteralExpressionSyntax>(numberToken);
   } else {
     if (Peek(0)->Kind == SyntaxKind::IdentifierToken &&
         Peek(1)->Kind == SyntaxKind::OpenParenthesisToken) {
