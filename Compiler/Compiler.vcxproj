@@ -163,6 +163,7 @@
     <ClInclude Include="Parser.h" />
     <ClInclude Include="SourceText.h" />
     <ClInclude Include="Statement.h" />
+    <ClInclude Include="Symbol.h" />
     <ClInclude Include="SyntaxFacts.h" />
     <ClInclude Include="SyntaxNode.h" />
     <ClInclude Include="SyntaxToken.h" />

@@ -4,92 +4,93 @@ namespace Compiler {
 std::vector<std::shared_ptr<BoundUnaryOperator>> Operators::unaryOperators = {
     std::make_shared<BoundUnaryOperator>(
         SyntaxKind::BangToken, BoundUnaryOperatorKind::LogicalNegation,
-        Type::BoolType),
+        BaseType::Bool),
     std::make_shared<BoundUnaryOperator>(
-        SyntaxKind::PlusToken, BoundUnaryOperatorKind::Identity, Type::IntType),
+        SyntaxKind::PlusToken, BoundUnaryOperatorKind::Identity, BaseType::Int),
     std::make_shared<BoundUnaryOperator>(SyntaxKind::MinusToken,
                                          BoundUnaryOperatorKind::Negation,
-                                         Type::IntType),
+                                         BaseType::Int),
     std::make_shared<BoundUnaryOperator>(SyntaxKind::TiledeToken,
                                          BoundUnaryOperatorKind::OnesComplememt,
-                                         Type::IntType),
+                                         BaseType::Int),
 };
 std::vector<std::shared_ptr<BoundBinaryOperator>> Operators::binaryOperators = {
     std::make_shared<BoundBinaryOperator>(
-        SyntaxKind::PlusToken, BoundBinaryOperatorKind::Addition, Type::IntType,
-        Type::IntType, Type::IntType),
+        SyntaxKind::PlusToken, BoundBinaryOperatorKind::Addition, BaseType::Int,
+        BaseType::Int, BaseType::Int),
     std::make_shared<BoundBinaryOperator>(
-        SyntaxKind::PlusEqualsToken, BoundBinaryOperatorKind::AdditionEqual, Type::IntType,
-        Type::IntType, Type::IntType),
+        SyntaxKind::PlusToken, BoundBinaryOperatorKind::Addition,
+        BaseType::String, BaseType::String, BaseType::String),
     std::make_shared<BoundBinaryOperator>(
-        SyntaxKind::MinusEqualsToken, BoundBinaryOperatorKind::SubtractionEqual, Type::IntType,
-        Type::IntType, Type::IntType),
+        SyntaxKind::PlusEqualsToken, BoundBinaryOperatorKind::AdditionEqual,
+        BaseType::Int, BaseType::Int, BaseType::Int),
+    std::make_shared<BoundBinaryOperator>(
+        SyntaxKind::MinusEqualsToken, BoundBinaryOperatorKind::SubtractionEqual,
+        BaseType::Int, BaseType::Int, BaseType::Int),
     std::make_shared<BoundBinaryOperator>(
         SyntaxKind::MinusToken, BoundBinaryOperatorKind::Subtraction,
-        Type::IntType, Type::IntType, Type::IntType),
+        BaseType::Int, BaseType::Int, BaseType::Int),
     std::make_shared<BoundBinaryOperator>(
         SyntaxKind::StarToken, BoundBinaryOperatorKind::Multiplication,
-        Type::IntType, Type::IntType, Type::IntType),
+        BaseType::Int, BaseType::Int, BaseType::Int),
     std::make_shared<BoundBinaryOperator>(
         SyntaxKind::SlashToken, BoundBinaryOperatorKind::Subtraction,
-        Type::IntType, Type::IntType, Type::IntType),
+        BaseType::Int, BaseType::Int, BaseType::Int),
     std::make_shared<BoundBinaryOperator>(SyntaxKind::AmpersandAmpersandToken,
                                           BoundBinaryOperatorKind::LogicalAnd,
-                                          Type::BoolType, Type::BoolType,
-                                          Type::BoolType),
+                                          BaseType::Bool, BaseType::Bool,
+                                          BaseType::Bool),
     std::make_shared<BoundBinaryOperator>(
         SyntaxKind::PipePipeToken, BoundBinaryOperatorKind::LogicalOr,
-        Type::BoolType, Type::BoolType, Type::BoolType),
-    std::make_shared<BoundBinaryOperator>(SyntaxKind::AmpersandToken,
-                                          BoundBinaryOperatorKind::BitWiseAnd,
-                                          Type::BoolType, Type::BoolType,
-                                          Type::BoolType),
-    std::make_shared<BoundBinaryOperator>(
-        SyntaxKind::PipeToken, BoundBinaryOperatorKind::BitWiseOr,
-        Type::BoolType, Type::BoolType, Type::BoolType),
+        BaseType::Bool, BaseType::Bool, BaseType::Bool),
     std::make_shared<BoundBinaryOperator>(
         SyntaxKind::AmpersandToken, BoundBinaryOperatorKind::BitWiseAnd,
-        Type::IntType, Type::IntType, Type::IntType),
+        BaseType::Bool, BaseType::Bool, BaseType::Bool),
     std::make_shared<BoundBinaryOperator>(
         SyntaxKind::PipeToken, BoundBinaryOperatorKind::BitWiseOr,
-        Type::IntType, Type::IntType, Type::IntType),
+        BaseType::Bool, BaseType::Bool, BaseType::Bool),
+    std::make_shared<BoundBinaryOperator>(
+        SyntaxKind::AmpersandToken, BoundBinaryOperatorKind::BitWiseAnd,
+        BaseType::Int, BaseType::Int, BaseType::Int),
+    std::make_shared<BoundBinaryOperator>(
+        SyntaxKind::PipeToken, BoundBinaryOperatorKind::BitWiseOr,
+        BaseType::Int, BaseType::Int, BaseType::Int),
     std::make_shared<BoundBinaryOperator>(
         SyntaxKind::HatToken, BoundBinaryOperatorKind::BitWiseXor,
-        Type::IntType, Type::IntType, Type::IntType),
+        BaseType::Int, BaseType::Int, BaseType::Int),
     std::make_shared<BoundBinaryOperator>(
         SyntaxKind::HatToken, BoundBinaryOperatorKind::BitWiseXor,
-        Type::BoolType, Type::BoolType, Type::BoolType),
+        BaseType::Bool, BaseType::Bool, BaseType::Bool),
     std::make_shared<BoundBinaryOperator>(
         SyntaxKind::EqualsEqualsToken, BoundBinaryOperatorKind::Equsls,
-        Type::IntType, Type::IntType, Type::BoolType),
+        BaseType::Int, BaseType::Int, BaseType::Bool),
     std::make_shared<BoundBinaryOperator>(
         SyntaxKind::EqualsEqualsToken, BoundBinaryOperatorKind::Equsls,
-        Type::BoolType, Type::BoolType, Type::BoolType),
+        BaseType::Bool, BaseType::Bool, BaseType::Bool),
     std::make_shared<BoundBinaryOperator>(
         SyntaxKind::NotEqualsToken, BoundBinaryOperatorKind::NotEquals,
-        Type::IntType, Type::IntType, Type::BoolType),
+        BaseType::Int, BaseType::Int, BaseType::Bool),
     std::make_shared<BoundBinaryOperator>(
         SyntaxKind::NotEqualsToken, BoundBinaryOperatorKind::NotEquals,
-        Type::BoolType, Type::BoolType, Type::BoolType),
+        BaseType::Bool, BaseType::Bool, BaseType::Bool),
     std::make_shared<BoundBinaryOperator>(
         SyntaxKind::LessOrEqualToken, BoundBinaryOperatorKind::LessOrEqual,
-        Type::IntType, Type::IntType, Type::BoolType),
+        BaseType::Int, BaseType::Int, BaseType::Bool),
     std::make_shared<BoundBinaryOperator>(
-        SyntaxKind::LessToken, BoundBinaryOperatorKind::Less, Type::IntType,
-        Type::IntType, Type::BoolType),
+        SyntaxKind::LessToken, BoundBinaryOperatorKind::Less, BaseType::Int,
+        BaseType::Int, BaseType::Bool),
     std::make_shared<BoundBinaryOperator>(
         SyntaxKind::GreaterOrEqualToken,
-        BoundBinaryOperatorKind::GreaterOrEqual, Type::IntType, Type::IntType,
-        Type::BoolType),
+        BoundBinaryOperatorKind::GreaterOrEqual, BaseType::Int, BaseType::Int,
+        BaseType::Bool),
     std::make_shared<BoundBinaryOperator>(
         SyntaxKind::GreaterToken, BoundBinaryOperatorKind::Greater,
-        Type::IntType, Type::IntType, Type::BoolType),
-
+        BaseType::Int, BaseType::Int, BaseType::Bool),
 
 };
 
-std::shared_ptr<BoundUnaryOperator> Operators::BindUnaryOperator(
-    SyntaxKind kind, Type operandType) {
+std::shared_ptr<BoundUnaryOperator>
+Operators::BindUnaryOperator(SyntaxKind kind, TypeSymbol operandType) {
   for (auto op : unaryOperators) {
     if (op->syntaxkind == kind && op->operandType == operandType) {
       return op;
@@ -97,8 +98,8 @@ std::shared_ptr<BoundUnaryOperator> Operators::BindUnaryOperator(
   }
   return nullptr;
 }
-std::shared_ptr<BoundBinaryOperator> Operators::BindBinaryOperator(
-    SyntaxKind kind, Type lefttype, Type righttype) {
+std::shared_ptr<BoundBinaryOperator>
+Operators::BindBinaryOperator(SyntaxKind kind, TypeSymbol lefttype, TypeSymbol righttype) {
   for (auto op : binaryOperators) {
     if (op->syntaxkind == kind && op->lefttype == lefttype &&
         op->righttype == righttype) {
@@ -107,4 +108,4 @@ std::shared_ptr<BoundBinaryOperator> Operators::BindBinaryOperator(
   }
   return nullptr;
 }
-}  // namespace Compiler
+} // namespace Compiler

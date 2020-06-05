@@ -128,12 +128,40 @@ auto Compiler::Parser::ParsePrimaryExpression()
   } else if (Equals(Current()->Kind, SyntaxKind::IdentifierToken)) {
     auto identifier = NextToken();
     return std::make_shared<NameExpressionSyntax>(identifier);
+  } else if (Equals(Current()->Kind, SyntaxKind::StringToken)) {
+    auto stringToken = NextToken();
+    return std::make_shared<LiteralExpressionSyntax>(stringToken);
+  } else if (Equals(Current()->Kind, SyntaxKind::NumberToken)) {
+    auto numberToken = MatchToken(SyntaxKind::NumberToken);
+    return std::make_shared<LiteralExpressionSyntax>(std::move(numberToken));
+  } else {
+    if (Peek(0)->Kind == SyntaxKind::IdentifierToken &&
+        Peek(1)->Kind == SyntaxKind::OpenParenthesisToken) {
+      auto identifier = MatchToken(SyntaxKind::IdentifierToken);
+      auto openbrace = MatchToken(SyntaxKind::OpenParenthesisToken);
+      auto arguments = ParseArguments();
+      auto closebrace = MatchToken(SyntaxKind::CloseParenthesisToken);
+      return std::make_shared<CallExpressionSyntax>(identifier, openbrace,
+                                                    arguments, closebrace);
+    }
+    auto identifier = NextToken();
+    return std::make_shared<NameExpressionSyntax>(identifier);
   }
-
-  auto numberToken = MatchToken(SyntaxKind::NumberToken);
-  return std::make_shared<LiteralExpressionSyntax>(std::move(numberToken));
 }
-
+auto Compiler::Parser::ParseArguments()
+    -> std::vector<std::shared_ptr<ExpressionSyntax>> {
+  std::vector<std::shared_ptr<ExpressionSyntax>> arguments;
+  auto curr = Current();
+  while (curr->Kind != SyntaxKind::CloseParenthesisToken &&
+         curr->Kind != SyntaxKind::EndOfFileToken) {
+    auto argument = ParseExpression();
+    arguments.emplace_back(argument);
+    if (curr->Kind != SyntaxKind::CloseParenthesisToken) {
+      auto comma = MatchToken(SyntaxKind::CommaToken);
+    }
+  }
+  return std::move(arguments);
+}
 auto Compiler::Parser::ParseBinaryExpression(int parentprecedence)
     -> std::shared_ptr<ExpressionSyntax> {
   std::shared_ptr<ExpressionSyntax> left;
@@ -157,7 +185,8 @@ auto Compiler::Parser::ParseBinaryExpression(int parentprecedence)
   }
   while (true) {
     auto precedence = SyntaxFacts::GetBinaryOperatorPrecedence(Current()->Kind);
-    if (precedence == 0 || precedence <= parentprecedence) break;
+    if (precedence == 0 || precedence <= parentprecedence)
+      break;
     auto op = NextToken();
     auto right = ParseBinaryExpression(precedence);
     left = std::make_shared<BinaryExpressionSyntax>(left, op, right);

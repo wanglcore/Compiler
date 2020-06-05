@@ -2,7 +2,7 @@
 #include <iostream>
 #include <variant>
 namespace Compiler {
-using Object = std::variant<int, bool, nullptr_t>;
+using Object = std::variant<int, bool, std::string, nullptr_t>;
 enum class SyntaxKind {
   DefaultToken,
   NumberToken,
@@ -29,6 +29,9 @@ enum class SyntaxKind {
   GreaterToken,
   GreaterOrEqualToken,
   ColonToken,
+  StringToken,
+  CommaToken,
+  LeftArrowToken,
 
   TrueToken,
   FalseToken,
@@ -60,6 +63,7 @@ enum class SyntaxKind {
   NameExpression,
   AssignmentExpression,
   CompilationUnit,
+  CallExpression,
 
   BlockStatement,
   ExpressionStatement,
@@ -69,9 +73,12 @@ enum class SyntaxKind {
   DoStatemnt,
   ForStatement,
   ElseClause,
-  VariableDeclaration
-};
+  VariableDeclaration,
 
+  GlobalStatement,
+  FunctionDeclarition
+};
+enum class SymbolKind { Variable, Type, Function, Parameter, DefaultType };
 enum class BoundNodeKind {
   DefaultBoundNodeKind,
   UnaryExpression,
@@ -86,8 +93,10 @@ enum class BoundNodeKind {
   WhileStatement,
   DoStatement,
   ForStatement,
+  CallExpression,
+  ConversionExpression
 };
-enum class Type { IntType, BoolType, DefaultType };
+enum class Type { IntType, BoolType, StringType, DefaultType };
 enum class BoundUnaryOperatorKind {
   Identity,
   Negation,
@@ -131,100 +140,88 @@ enum class NodeKind {
   BlockStatementNode,
   ExpressionStatementNode
 };
-struct VariableSymbol {
-  std::string name;
-  Type type{Type::DefaultType};
-  bool isReadlyOnly{true};
-  VariableSymbol(std::string _name, Type _type)
-      : name(_name), type(_type), isReadlyOnly(true) {}
-  VariableSymbol(std::string _name, Type _type, bool _readonly)
-      : name(_name), type(_type), isReadlyOnly(_readonly) {}
-  VariableSymbol() : name(""), type(Type::DefaultType), isReadlyOnly(true) {}
-};
-static bool operator<(const VariableSymbol& v1, const VariableSymbol& v2) {
-  return v1.name < v2.name;
-}
-static std::ostream& operator<<(std::ostream& os, const SyntaxKind& kind) {
+
+static std::ostream &operator<<(std::ostream &os, const SyntaxKind &kind) {
   switch (kind) {
-    case SyntaxKind::UnaryExpression:
-      os << "UnaryExpression";
-      break;
-    case SyntaxKind::DefaultToken:
-      os << "DefaultToken";
-      break;
-    case SyntaxKind::NumberToken:
-      os << "NumberToken";
-      break;
-    case SyntaxKind::PlusToken:
-      os << "PlusToken";
-      break;
-    case SyntaxKind::MinusToken:
-      os << "MinusToken";
-      break;
-    case SyntaxKind::StarToken:
-      os << "StarToken";
-      break;
-    case SyntaxKind::SlashToken:
-      os << "SlashToken";
-      break;
-    case SyntaxKind::OpenParenthesisToken:
-      os << "OpenParenthesisToken";
-      break;
-    case SyntaxKind::CloseParenthesisToken:
-      os << "CloseParenthesisToken";
-      break;
-    case SyntaxKind::BadToken:
-      os << "BadToken";
-      break;
-    case SyntaxKind::EndOfFileToken:
-      os << "EndOfFileToken";
-      break;
-    case SyntaxKind::SpaceToken:
-      os << "SpaceToken";
-      break;
-    case SyntaxKind::LiteralExpression:
-      os << "NumberExpression";
-      break;
-    case SyntaxKind::BinaryExpression:
-      os << "BinaryExpression";
-      break;
-    case SyntaxKind::ParenthesizedExpression:
-      os << "ParenthesizedExpression";
-      break;
-    case SyntaxKind::IdentifierToken:
-      os << "IdentifierToken";
-      break;
-    case SyntaxKind::EqualsEqualsToken:
-      os << "EqualsEqualsToken";
-      break;
-    case SyntaxKind::EqualsToken:
-      os << "EqualsToken";
-      break;
-    case SyntaxKind::TrueToken:
-      os << "TrueToken";
-      break;
-    case SyntaxKind::FalseToken:
-      os << "FalseToken";
-      break;
-    case SyntaxKind::AmpersandAmpersandToken:
-      os << "AmpersandAmpersandToken";
-      break;
-    case SyntaxKind::PipePipeToken:
-      os << "PipePipeToken";
-      break;
-    case SyntaxKind::NotEqualsToken:
-      os << "NotEqualsToken";
-      break;
-    case SyntaxKind::AssignmentExpression:
-      os << "AssignmentExpression";
-      break;
-    case SyntaxKind::BangToken:
-      os << "BangToken";
-      break;
-    case SyntaxKind::NameExpression:
-      os << "NameExpression";
-      break;
+  case SyntaxKind::UnaryExpression:
+    os << "UnaryExpression";
+    break;
+  case SyntaxKind::DefaultToken:
+    os << "DefaultToken";
+    break;
+  case SyntaxKind::NumberToken:
+    os << "NumberToken";
+    break;
+  case SyntaxKind::PlusToken:
+    os << "PlusToken";
+    break;
+  case SyntaxKind::MinusToken:
+    os << "MinusToken";
+    break;
+  case SyntaxKind::StarToken:
+    os << "StarToken";
+    break;
+  case SyntaxKind::SlashToken:
+    os << "SlashToken";
+    break;
+  case SyntaxKind::OpenParenthesisToken:
+    os << "OpenParenthesisToken";
+    break;
+  case SyntaxKind::CloseParenthesisToken:
+    os << "CloseParenthesisToken";
+    break;
+  case SyntaxKind::BadToken:
+    os << "BadToken";
+    break;
+  case SyntaxKind::EndOfFileToken:
+    os << "EndOfFileToken";
+    break;
+  case SyntaxKind::SpaceToken:
+    os << "SpaceToken";
+    break;
+  case SyntaxKind::LiteralExpression:
+    os << "NumberExpression";
+    break;
+  case SyntaxKind::BinaryExpression:
+    os << "BinaryExpression";
+    break;
+  case SyntaxKind::ParenthesizedExpression:
+    os << "ParenthesizedExpression";
+    break;
+  case SyntaxKind::IdentifierToken:
+    os << "IdentifierToken";
+    break;
+  case SyntaxKind::EqualsEqualsToken:
+    os << "EqualsEqualsToken";
+    break;
+  case SyntaxKind::EqualsToken:
+    os << "EqualsToken";
+    break;
+  case SyntaxKind::TrueToken:
+    os << "TrueToken";
+    break;
+  case SyntaxKind::FalseToken:
+    os << "FalseToken";
+    break;
+  case SyntaxKind::AmpersandAmpersandToken:
+    os << "AmpersandAmpersandToken";
+    break;
+  case SyntaxKind::PipePipeToken:
+    os << "PipePipeToken";
+    break;
+  case SyntaxKind::NotEqualsToken:
+    os << "NotEqualsToken";
+    break;
+  case SyntaxKind::AssignmentExpression:
+    os << "AssignmentExpression";
+    break;
+  case SyntaxKind::BangToken:
+    os << "BangToken";
+    break;
+  case SyntaxKind::NameExpression:
+    os << "NameExpression";
+    break;
   }
   return os;
 }
-}  // namespace Compiler
+} // namespace Compiler

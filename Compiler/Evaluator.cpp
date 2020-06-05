@@ -7,32 +7,32 @@ Object Compiler::Evaluator::Evaluate() {
 
 void Evaluator::EvaluateStatement(std::shared_ptr<BoundStatement> statement) {
   switch (statement->Kind) {
-    case BoundNodeKind::BlockStatement:
-      EvaluateBlockStatement(
-          std::dynamic_pointer_cast<BoundBlockStatement>(statement));
-      break;
-    case BoundNodeKind::VariableDeclaration:
-      EvaluateVariableDeclaration(
-          std::dynamic_pointer_cast<BoundVariableDeclaration>(statement));
-      break;
-    case BoundNodeKind::IfStatement:
-      EvaluateIfStatement(
-          std::dynamic_pointer_cast<BoundIfStatement>(statement));
-      break;
-    case BoundNodeKind::ExpressionStatement:
-      EvaluateExpressionStatement(
-          std::dynamic_pointer_cast<BoundExpressionStatement>(statement));
-      break;
-    case BoundNodeKind::WhileStatement:
-      EvaluateWhileStatement(
-          std::dynamic_pointer_cast<BoundWhileStatement>(statement));
-      break;
-    case BoundNodeKind::ForStatement:
-      EvaluateForStatement(
-          std::dynamic_pointer_cast<BoundForStatement>(statement));
-      break;
-    default:
-      break;
+  case BoundNodeKind::BlockStatement:
+    EvaluateBlockStatement(
+        std::dynamic_pointer_cast<BoundBlockStatement>(statement));
+    break;
+  case BoundNodeKind::VariableDeclaration:
+    EvaluateVariableDeclaration(
+        std::dynamic_pointer_cast<BoundVariableDeclaration>(statement));
+    break;
+  case BoundNodeKind::IfStatement:
+    EvaluateIfStatement(std::dynamic_pointer_cast<BoundIfStatement>(statement));
+    break;
+  case BoundNodeKind::ExpressionStatement:
+    EvaluateExpressionStatement(
+        std::dynamic_pointer_cast<BoundExpressionStatement>(statement));
+    break;
+  case BoundNodeKind::WhileStatement:
+    EvaluateWhileStatement(
+        std::dynamic_pointer_cast<BoundWhileStatement>(statement));
+    break;
+  case BoundNodeKind::ForStatement:
+    EvaluateForStatement(
+        std::dynamic_pointer_cast<BoundForStatement>(statement));
+    break;
+
+  default:
+    break;
   }
 }
 
@@ -85,6 +85,8 @@ void Evaluator::EvaluateForStatement(
     }
   }
 }
+Object Evaluator::EvaluateCallExpression(
+    std::shared_ptr<BoundCallExpression> statement) {}
 
 void Evaluator::EvaluateVariableDeclaration(
     std::shared_ptr<BoundVariableDeclaration> statement) {
@@ -100,7 +102,7 @@ void Evaluator::EvaluateExpressionStatement(
 
 Object Compiler::Evaluator::EvaluateExpression(
     std::shared_ptr<BoundExpression> _root) {
-  if (_root == nullptr) {  //当对象为空时返回0值
+  if (_root == nullptr) { //当对象为空时返回0值
     return 0;
   }
   if (_root->EqualsKind(BoundNodeKind::LiteralExpression)) {
@@ -113,16 +115,16 @@ Object Compiler::Evaluator::EvaluateExpression(
         std::dynamic_pointer_cast<BoundUnaryExpression>(_root);
     auto val = EvaluateExpression(unaryExpressionSyntax->operand);
     switch (unaryExpressionSyntax->op->kind) {
-      case BoundUnaryOperatorKind::Identity:
-        return -std::get<0>(val);
-      case BoundUnaryOperatorKind::Negation:
-        return std::get<0>(val);
-      case BoundUnaryOperatorKind::LogicalNegation:
-        return !std::get<1>(val);
-      case BoundUnaryOperatorKind::OnesComplememt:
-        return ~std::get<int>(val);
-      default:
-        return 0;
+    case BoundUnaryOperatorKind::Identity:
+      return -std::get<0>(val);
+    case BoundUnaryOperatorKind::Negation:
+      return std::get<0>(val);
+    case BoundUnaryOperatorKind::LogicalNegation:
+      return !std::get<1>(val);
+    case BoundUnaryOperatorKind::OnesComplememt:
+      return ~std::get<int>(val);
+    default:
+      return 0;
     }
   }
   if (_root->EqualsKind(BoundNodeKind::VariableExpression)) {
@@ -142,48 +144,51 @@ Object Compiler::Evaluator::EvaluateExpression(
     auto left = EvaluateExpression(binaryExpressionSyntax->left);
     auto right = EvaluateExpression(binaryExpressionSyntax->right);
     switch (binaryExpressionSyntax->op->kind) {
-      case BoundBinaryOperatorKind::Addition:
-        return std::get<0>(left) + std::get<0>(right);
-      case BoundBinaryOperatorKind::Subtraction:
-        return std::get<0>(left) - std::get<0>(right);
-      case BoundBinaryOperatorKind::Multiplication:
-        return std::get<0>(left) * std::get<0>(right);
-      case BoundBinaryOperatorKind::Division:
-        return std::get<0>(left) / std::get<0>(right);
-      case BoundBinaryOperatorKind::Less:
-        return std::get<0>(left) < std::get<0>(right);
-      case BoundBinaryOperatorKind::LessOrEqual:
-        return std::get<0>(left) <= std::get<0>(right);
-      case BoundBinaryOperatorKind::Greater:
-        return std::get<0>(left) > std::get<0>(right);
-      case BoundBinaryOperatorKind::GreaterOrEqual:
-        return std::get<0>(left) >= std::get<0>(right);
-      case BoundBinaryOperatorKind::LogicalAnd:
-        return std::get<1>(left) && std::get<1>(right);
-      case BoundBinaryOperatorKind::LogicalOr:
-        return std::get<1>(left) || std::get<1>(right);
-      case BoundBinaryOperatorKind::Equsls:
-        return left == right;
-      case BoundBinaryOperatorKind::NotEquals:
-        return left != right;
-      case BoundBinaryOperatorKind::BitWiseAnd:
-        if (left.index() == 1 && right.index() == 1) {
-          return std::get<1>(left) & std::get<1>(right);
-        } else {
-          return std::get<0>(left) & std::get<0>(right);
-        }
-      case BoundBinaryOperatorKind::BitWiseOr:
-        if (left.index() == 1 && right.index() == 1) {
-          return std::get<1>(left) | std::get<1>(right);
-        } else {
-          return std::get<0>(left) | std::get<0>(right);
-        }
-      case BoundBinaryOperatorKind::BitWiseXor:
-        if (left.index() == 1 && right.index() == 1) {
-          return std::get<1>(left) ^ std::get<1>(right);
-        } else {
-          return std::get<0>(left) ^ std::get<0>(right);
-        }
+    case BoundBinaryOperatorKind::Addition:
+      if (left.index() == 2 && right.index() == 2) {
+        return std::get<std::string>(left) + std::get<std::string>(right);
+      }
+      return std::get<0>(left) + std::get<0>(right);
+    case BoundBinaryOperatorKind::Subtraction:
+      return std::get<0>(left) - std::get<0>(right);
+    case BoundBinaryOperatorKind::Multiplication:
+      return std::get<0>(left) * std::get<0>(right);
+    case BoundBinaryOperatorKind::Division:
+      return std::get<0>(left) / std::get<0>(right);
+    case BoundBinaryOperatorKind::Less:
+      return std::get<0>(left) < std::get<0>(right);
+    case BoundBinaryOperatorKind::LessOrEqual:
+      return std::get<0>(left) <= std::get<0>(right);
+    case BoundBinaryOperatorKind::Greater:
+      return std::get<0>(left) > std::get<0>(right);
+    case BoundBinaryOperatorKind::GreaterOrEqual:
+      return std::get<0>(left) >= std::get<0>(right);
+    case BoundBinaryOperatorKind::LogicalAnd:
+      return std::get<1>(left) && std::get<1>(right);
+    case BoundBinaryOperatorKind::LogicalOr:
+      return std::get<1>(left) || std::get<1>(right);
+    case BoundBinaryOperatorKind::Equsls:
+      return left == right;
+    case BoundBinaryOperatorKind::NotEquals:
+      return left != right;
+    case BoundBinaryOperatorKind::BitWiseAnd:
+      if (left.index() == 1 && right.index() == 1) {
+        return std::get<1>(left) & std::get<1>(right);
+      } else {
+        return std::get<0>(left) & std::get<0>(right);
+      }
+    case BoundBinaryOperatorKind::BitWiseOr:
+      if (left.index() == 1 && right.index() == 1) {
+        return std::get<1>(left) | std::get<1>(right);
+      } else {
+        return std::get<0>(left) | std::get<0>(right);
+      }
+    case BoundBinaryOperatorKind::BitWiseXor:
+      if (left.index() == 1 && right.index() == 1) {
+        return std::get<1>(left) ^ std::get<1>(right);
+      } else {
+        return std::get<0>(left) ^ std::get<0>(right);
+      }
     }
     if (binaryExpressionSyntax->op->kind ==
         BoundBinaryOperatorKind::AdditionEqual) {
@@ -201,6 +206,12 @@ Object Compiler::Evaluator::EvaluateExpression(
       iter->second = (std::get<int>(iter->second) - std::get<int>(right));
       return iter->second;
     }
+  } else if (_root->EqualsKind(BoundNodeKind::CallExpression)) {
+    return EvaluateCallExpression(
+        std::dynamic_pointer_cast<BoundCallExpression>(_root));
+  } else if (_root->EqualsKind(BoundNodeKind::ConversionExpression)) {
+    return EvaluateConversionExpression(
+        std::dynamic_pointer_cast<BoundConversionExpression>(_root));
   }
   /* if (Equals(_root->Kind, BoundNodeKind::UnaryExpression)) {
      auto parenthesizedExpression =
@@ -209,4 +220,4 @@ Object Compiler::Evaluator::EvaluateExpression(
    }*/
   return 0;
 }
-}  // namespace Compiler
+} // namespace Compiler

@@ -35,6 +35,34 @@ std::shared_ptr<SyntaxToken> Lexer::NextToken() {
     auto _text = text->SubString(start, position - start);
 
     return std::make_shared<SyntaxToken>(SyntaxKind::SpaceToken, start, _text);
+  } else if (Current() == '"') {
+    ++position;
+    int start = position;
+    bool done = false;
+    while (!done) {
+      char curr = Current();
+      switch (curr) {
+      case '\0':
+      case '\r':
+      case '\n':
+        done = true;
+        break;
+      case '"':
+        if (LookHead() == '"') {
+          position += 2;
+        } else {
+          position++;
+          done = true;
+        }
+        break;
+      default:
+        ++position;
+        break;
+      }
+    }
+    std::string sb = text->SubString(start, position - start);
+    return std::make_shared<SyntaxToken>(SyntaxKind::StringToken, start - 1, sb,
+                                         sb, Type::StringType);
   } else if (Current() == '|') {
     if (LookHead() == '|') {
       position += 2;
@@ -45,6 +73,9 @@ std::shared_ptr<SyntaxToken> Lexer::NextToken() {
       return std::make_shared<SyntaxToken>(SyntaxKind::PipeToken, position - 1,
                                            "|");
     }
+  } else if (Current() == ',') {
+    return std::make_shared<SyntaxToken>(SyntaxKind::CommaToken, ++position,
+                                         ",");
   } else if (Current() == '&') {
     if (LookHead() == '&') {
       position += 2;
@@ -98,9 +129,9 @@ std::shared_ptr<SyntaxToken> Lexer::NextToken() {
   } else if (Current() == '^') {
     return std::make_shared<SyntaxToken>(SyntaxKind::HatToken, ++position, "^");
   } else if (Current() == '~') {
-    return std::make_shared<SyntaxToken>(SyntaxKind::TiledeToken, ++position, "~");
-  }
-  else if (Current() == ':') {
+    return std::make_shared<SyntaxToken>(SyntaxKind::TiledeToken, ++position,
+                                         "~");
+  } else if (Current() == ':') {
     return std::make_shared<SyntaxToken>(SyntaxKind::ColonToken, ++position,
                                          ":");
   } else if (Current() == '+') {
@@ -152,4 +183,4 @@ std::shared_ptr<SyntaxToken> Lexer::NextToken() {
   return std::make_shared<SyntaxToken>(SyntaxKind::BadToken, position - 1,
                                        text->SubString(position - 1, 1));
 }
-}  // namespace Compiler
+} // namespace Compiler

@@ -3,11 +3,11 @@
 #include "Type.h"
 namespace Compiler {
 class BoundExpression : public BoundNode {
- public:
-  BoundExpression(BoundNodeKind kind, Type _type)
+public:
+  BoundExpression(BoundNodeKind kind, TypeSymbol _type)
       : BoundNode(kind), type(_type) {}
-  Type type{Type::DefaultType};
+  TypeSymbol type;
   virtual bool EqualsKind(BoundNodeKind other) { return other == Kind; }
 };
 
-}  // namespace Compiler
+} // namespace Compiler
