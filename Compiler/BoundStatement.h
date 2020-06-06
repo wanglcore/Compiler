@@ -58,6 +58,16 @@ public:
   std::shared_ptr<BoundStatement> statement;
   std::shared_ptr<BoundExpression> condition;
 };
+class BoundDoWhileStatement final : public BoundStatement {
+ public:
+  BoundDoWhileStatement(std::shared_ptr<BoundExpression> _condition,
+                      std::shared_ptr<BoundStatement> _statement)
+      : BoundStatement(BoundNodeKind::DoWhileStatement),
+        statement(_statement),
+        condition(_condition) {}
+  std::shared_ptr<BoundStatement> statement;
+  std::shared_ptr<BoundExpression> condition;
+};
 class BoundForStatement final : public BoundStatement {
 public:
   BoundForStatement(VariableSymbol _variable,
@@ -71,5 +81,29 @@ public:
   VariableSymbol variable;
   std::shared_ptr<BoundExpression> iterbegin, iterend, iterstep;
   std::shared_ptr<BoundStatement> statement;
+};
+class BoundLabelStatement final : public BoundStatement {
+public:
+  BoundLabelStatement(BoundLabel _label)
+      : BoundStatement(BoundNodeKind::LabelStatement), label(_label) {}
+  BoundLabel label;
+};
+class BoundGotoStatement final : public BoundStatement {
+public:
+  BoundGotoStatement(BoundLabel _label)
+      : BoundStatement(BoundNodeKind::GotoStatement), label(_label) {}
+  BoundLabel label;
+};
+
+class BoundConditionalGotoStatement final : public BoundStatement {
+public:
+  BoundConditionalGotoStatement(BoundLabel _label,
+                                std::shared_ptr<BoundExpression> _condition,
+                                bool _jumpifTrue = true)
+      : BoundStatement(BoundNodeKind::ConditionalGotoStatement), label(_label),
+        condition(_condition), jumpifTrue(_jumpifTrue) {}
+  BoundLabel label;
+  std::shared_ptr<BoundExpression> condition;
+  bool jumpifTrue;
 };
 } // namespace Compiler

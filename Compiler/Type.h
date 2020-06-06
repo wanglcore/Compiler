@@ -6,6 +6,7 @@ using Object = std::variant<int, bool, std::string, nullptr_t>;
 enum class SyntaxKind {
   DefaultToken,
   NumberToken,
+  TypeClause,
   PlusToken,
   PlusEqualsToken,
   MinusEqualsToken,
@@ -32,6 +33,7 @@ enum class SyntaxKind {
   StringToken,
   CommaToken,
   LeftArrowToken,
+  DefToken,
 
   TrueToken,
   FalseToken,
@@ -70,13 +72,14 @@ enum class SyntaxKind {
   IfStatement,
   ElseStatement,
   WhileStatement,
-  DoStatemnt,
+  DoWhileStatemnt,
   ForStatement,
   ElseClause,
   VariableDeclaration,
 
   GlobalStatement,
-  FunctionDeclarition
+  FunctionDeclarition,
+  Parameters
 };
 enum class SymbolKind { Variable, Type, Function, Parameter, DefaultType };
 enum class BoundNodeKind {
@@ -91,12 +94,15 @@ enum class BoundNodeKind {
   VariableDeclaration,
   IfStatement,
   WhileStatement,
-  DoStatement,
+  DoWhileStatement,
   ForStatement,
   CallExpression,
-  ConversionExpression
+  ConversionExpression,
+  LabelStatement,
+  GotoStatement,
+  ConditionalGotoStatement
 };
-enum class Type { IntType, BoolType, StringType, DefaultType };
+enum class BuildinType { Int, Bool, String, Void, Default };
 enum class BoundUnaryOperatorKind {
   Identity,
   Negation,

@@ -4,42 +4,42 @@ auto Binder::BindExpressionInternal(std::shared_ptr<ExpressionSyntax> syntax,
                                     SyntaxKind kind = SyntaxKind::DefaultToken)
     -> std::shared_ptr<BoundExpression> {
   switch (syntax->Kind) {
-  case SyntaxKind::LiteralExpression:
-    return BindLiteralExpression(
-        std::dynamic_pointer_cast<LiteralExpressionSyntax>(syntax));
-  case SyntaxKind::BinaryExpression:
-    return BindBinaryExpression(
-        std::dynamic_pointer_cast<BinaryExpressionSyntax>(syntax));
-  case SyntaxKind::ParenthesizedExpression:
-    return BindParenthesizedExpression(
-        std::dynamic_pointer_cast<ParenthesizedExpressionSyntax>(syntax));
-  case SyntaxKind::UnaryExpression:
-    return BindUnaryExpression(
-        std::dynamic_pointer_cast<UnaryExpressionSyntax>(syntax));
-  case SyntaxKind::NameExpression:
-    return BindNameExpression(
-        std::dynamic_pointer_cast<NameExpressionSyntax>(syntax), kind);
-  case SyntaxKind::AssignmentExpression:
-    return BindAssignmentExpression(
-        std::dynamic_pointer_cast<AssignmentExpressionSyntax>(syntax));
-  case SyntaxKind::CallExpression:
-    return BindCallExpression(
-        std::dynamic_pointer_cast<CallExpressionSyntax>(syntax));
-  default:
-    return nullptr;
+    case SyntaxKind::LiteralExpression:
+      return BindLiteralExpression(
+          std::dynamic_pointer_cast<LiteralExpressionSyntax>(syntax));
+    case SyntaxKind::BinaryExpression:
+      return BindBinaryExpression(
+          std::dynamic_pointer_cast<BinaryExpressionSyntax>(syntax));
+    case SyntaxKind::ParenthesizedExpression:
+      return BindParenthesizedExpression(
+          std::dynamic_pointer_cast<ParenthesizedExpressionSyntax>(syntax));
+    case SyntaxKind::UnaryExpression:
+      return BindUnaryExpression(
+          std::dynamic_pointer_cast<UnaryExpressionSyntax>(syntax));
+    case SyntaxKind::NameExpression:
+      return BindNameExpression(
+          std::dynamic_pointer_cast<NameExpressionSyntax>(syntax), kind);
+    case SyntaxKind::AssignmentExpression:
+      return BindAssignmentExpression(
+          std::dynamic_pointer_cast<AssignmentExpressionSyntax>(syntax));
+    case SyntaxKind::CallExpression:
+      return BindCallExpression(
+          std::dynamic_pointer_cast<CallExpressionSyntax>(syntax));
+    default:
+      return nullptr;
   }
 }
 auto Binder::BindExpression(std::shared_ptr<ExpressionSyntax> syntax,
                             bool canBeVoid = false)
     -> std::shared_ptr<BoundExpression> {
   auto result = BindExpressionInternal(syntax);
-  if (!canBeVoid && result->type == BaseType::Void) {
+  if (!canBeVoid && result->type == BuildinType::Void) {
     // TODO 当函数没有返回值时进行处理
   }
   return result;
 }
 auto Binder::BindExpression(std::shared_ptr<ExpressionSyntax> syntax,
-                            TypeSymbol type)
+                            BuildinType type)
     -> std::shared_ptr<BoundExpression> {
   if (syntax == nullptr) {
     return nullptr;
@@ -96,14 +96,14 @@ auto Binder::BindNameExpression(std::shared_ptr<NameExpressionSyntax> syntax,
       value != variables.end()) {
     return std::make_shared<BoundVariableExpression>(value->first);
   }*/
-  return std::make_shared<BoundLiteralExpression>(0, BaseType::Int);
+  return std::make_shared<BoundLiteralExpression>(0, BuildinType::Int);
 }
 auto Binder::BindCallExpression(std::shared_ptr<CallExpressionSyntax> syntax)
     -> std::shared_ptr<BoundExpression> {
   if (syntax->arguments.size() == 1) {
     if (auto type = LookupType(syntax->identifier->text);
-        type != BaseType::Default) {
-      return BindConversion(type, syntax->arguments[0]);
+        type != BuildinType::Default) {
+      return BindConversion(type, syntax->arguments[0], true);
     }
   }
   if (FunctionSymbol function;
@@ -171,26 +171,29 @@ auto Binder::BindParenthesizedExpression(
 auto Binder::BindStatement(std::shared_ptr<StatementSyntax> statement)
     -> std::shared_ptr<BoundStatement> {
   switch (statement->Kind) {
-  case SyntaxKind::BlockStatement:
-    return BindBlockStatement(
-        std::dynamic_pointer_cast<BlockStatementSyntax>(statement));
-  case SyntaxKind::ExpressionStatement:
-    return BindExpressionStatement(
-        std::dynamic_pointer_cast<ExpressionStatementSyntax>(statement));
-  case SyntaxKind::VariableDeclaration:
-    return BindVariableDeclarationStatement(
-        std::dynamic_pointer_cast<VariableDeclarationSyntax>(statement));
-  case SyntaxKind::IfStatement:
-    return BindIfStatement(
-        std::dynamic_pointer_cast<IfStatementSyntax>(statement));
-  case SyntaxKind::WhileStatement:
-    return BindWhileStatement(
-        std::dynamic_pointer_cast<WhileStatementSyntax>(statement));
-  case SyntaxKind::ForStatement:
-    return BindForStatement(
-        std::dynamic_pointer_cast<ForStatementSyntax>(statement));
-  default:
-    break;
+    case SyntaxKind::BlockStatement:
+      return BindBlockStatement(
+          std::dynamic_pointer_cast<BlockStatementSyntax>(statement));
+    case SyntaxKind::ExpressionStatement:
+      return BindExpressionStatement(
+          std::dynamic_pointer_cast<ExpressionStatementSyntax>(statement));
+    case SyntaxKind::VariableDeclaration:
+      return BindVariableDeclarationStatement(
+          std::dynamic_pointer_cast<VariableDeclarationSyntax>(statement));
+    case SyntaxKind::IfStatement:
+      return BindIfStatement(
+          std::dynamic_pointer_cast<IfStatementSyntax>(statement));
+    case SyntaxKind::WhileStatement:
+      return BindWhileStatement(
+          std::dynamic_pointer_cast<WhileStatementSyntax>(statement));
+    case SyntaxKind::ForStatement:
+      return BindForStatement(
+          std::dynamic_pointer_cast<ForStatementSyntax>(statement));
+    case SyntaxKind::DoWhileStatemnt:
+      return BindDoWhileStatement(
+          std::dynamic_pointer_cast<DoWhileStatementSyntax>(statement));
+    default:
+      break;
   }
 }
 auto Binder::BindBlockStatement(std::shared_ptr<BlockStatementSyntax> syntax)
@@ -216,15 +219,20 @@ auto Binder::BindVariableDeclarationStatement(
   auto name = syntax->identifier->text;
   auto isReadOnly = syntax->keyword->Kind == SyntaxKind::LetToken &&
                     syntax->mutkeyword == nullptr;
-  auto initializer = BindExpressionInternal(syntax->initializer);
-  auto variable = VariableSymbol(name, initializer->type, isReadOnly);
+  auto type = BindTypeClause(syntax->type);
+  auto initializer = BindExpression(syntax->initializer);
+  auto variableType = type == BuildinType::Default ? initializer->type : type;
+  // auto convertion = BindConversion(variableType,initializer->type);
+  auto variable = VariableSymbol(name, variableType, isReadOnly);
   if (scope->TryDeclareVariable(variable)) {
+    // todo add
   }
+  initializer->type = variableType;
   return std::make_shared<BoundVariableDeclaration>(variable, initializer);
 }
 auto Binder::BindIfStatement(std::shared_ptr<IfStatementSyntax> syntax)
     -> std::shared_ptr<BoundStatement> {
-  auto condition = BindExpression(syntax->condition, BaseType::Bool);
+  auto condition = BindExpression(syntax->condition, BuildinType::Bool);
   auto statement = BindStatement(syntax->thenstatement);
   auto elseStatement = syntax->elseClause == nullptr
                            ? nullptr
@@ -234,18 +242,25 @@ auto Binder::BindIfStatement(std::shared_ptr<IfStatementSyntax> syntax)
 }
 auto Binder::BindWhileStatement(std::shared_ptr<WhileStatementSyntax> syntax)
     -> std::shared_ptr<BoundStatement> {
-  auto condition = BindExpression(syntax->condition, BaseType::Bool);
+  auto condition = BindExpression(syntax->condition, BuildinType::Bool);
+  auto statement = BindStatement(syntax->statement);
+  return std::make_shared<BoundWhileStatement>(condition, statement);
+}
+auto Binder::BindDoWhileStatement(
+    std::shared_ptr<DoWhileStatementSyntax> syntax)
+    -> std::shared_ptr<BoundStatement> {
+  auto condition = BindExpression(syntax->condition, BuildinType::Bool);
   auto statement = BindStatement(syntax->statement);
   return std::make_shared<BoundWhileStatement>(condition, statement);
 }
 auto Binder::BindForStatement(std::shared_ptr<ForStatementSyntax> syntax)
     -> std::shared_ptr<BoundStatement> {
-  auto iterbegin = BindExpression(syntax->iterbegin, BaseType::Int);
-  auto iterend = BindExpression(syntax->iterend, BaseType::Int);
-  auto iterstep = BindExpression(syntax->iterstep, BaseType::Int);
+  auto iterbegin = BindExpression(syntax->iterbegin, BuildinType::Int);
+  auto iterend = BindExpression(syntax->iterend, BuildinType::Int);
+  auto iterstep = BindExpression(syntax->iterstep, BuildinType::Int);
   scope = std::make_shared<BoundScope>(scope);
   auto name = syntax->identifier->text;
-  VariableSymbol variable(name, BaseType::Int, true);
+  VariableSymbol variable(name, BuildinType::Int, true);
   if (!scope->TryDeclareVariable(variable)) {
   }
   auto statement = BindStatement(syntax->statement);
@@ -311,4 +326,4 @@ auto Binder::BindForStatement(std::shared_ptr<ForStatementSyntax> syntax)
 //  }
 //}
 
-} // namespace Compiler
+}  // namespace Compiler

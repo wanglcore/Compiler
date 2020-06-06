@@ -1,12 +1,12 @@
 #pragma once
+#include "BoundExpression.h"
+#include "BoundOperator.h"
+#include "Conversion.h"
+#include "Symbol.h"
+#include "Type.h"
 #include <memory>
 #include <string>
 #include <vector>
-
-#include "BoundExpression.h"
-#include "BoundOperator.h"
-#include "Symbol.h"
-#include "Type.h"
 namespace Compiler {
 class BoundUnaryExpression final : public BoundExpression {
 public:
@@ -23,7 +23,7 @@ public:
 
 class BoundLiteralExpression final : public BoundExpression {
 public:
-  BoundLiteralExpression(Object _value, TypeSymbol _type)
+  BoundLiteralExpression(Object _value, BuildinType _type)
       : BoundExpression(BoundNodeKind::LiteralExpression, _type),
         value(_value) {}
   Object value;
@@ -74,11 +74,12 @@ public:
 };
 class BoundConversionExpression final : public BoundExpression {
 public:
-  BoundConversionExpression(TypeSymbol _type,
+  BoundConversionExpression(BuildinType _type,
                             std::shared_ptr<BoundExpression> _expression)
       : BoundExpression(BoundNodeKind::ConversionExpression, _type),
         type(_type), expression(_expression) {}
   std::shared_ptr<BoundExpression> expression;
-  TypeSymbol type;
+  BuildinType type;
 };
+
 }; // namespace Compiler

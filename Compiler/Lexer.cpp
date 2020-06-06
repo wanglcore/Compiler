@@ -13,7 +13,7 @@ std::shared_ptr<SyntaxToken> Lexer::NextToken() {
     // auto _text = text.substr(start, position - start);
     Object value = std::stoi(_text);
     return std::make_shared<SyntaxToken>(SyntaxKind::NumberToken, start, _text,
-                                         value, BaseType::Int);
+                                         value, BuildinType::Int);
   } else if (std::isalpha(Current())) {
     int start = position;
     while (std::isalpha(Current())) {
@@ -62,7 +62,7 @@ std::shared_ptr<SyntaxToken> Lexer::NextToken() {
     }
     std::string sb = text->SubString(start, position - start);
     return std::make_shared<SyntaxToken>(SyntaxKind::StringToken, start - 1, sb,
-                                         sb, BaseType::String);
+                                         sb, BuildinType::String);
   } else if (Current() == '|') {
     if (LookHead() == '|') {
       position += 2;

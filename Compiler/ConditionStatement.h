@@ -53,6 +53,24 @@ class WhileStatementSyntax final : public StatementSyntax {
   stdexp condition;
   stdstate statement;
 };
+class DoWhileStatementSyntax final : public StatementSyntax {
+ public:
+  DoWhileStatementSyntax(stdtoken _dokeyword, stdstate _statement,
+                         stdtoken _whileKeyword, stdexp _condition)
+      : StatementSyntax(SyntaxKind::DoWhileStatemnt),
+        dokeyword(_dokeyword),
+        statement(_statement),
+        whilekeyword(_whileKeyword),
+        // openParenthesis(_openParenthesis),
+        condition(_condition) {}
+  // closeParenthesis(_closeParenthesis),
+  stdtoken whilekeyword;
+  stdtoken dokeyword;
+  // stdtoken openParenthesis;
+  // stdtoken closeParenthesis;
+  stdexp condition;
+  stdstate statement;
+};
 class ForStatementSyntax final : public StatementSyntax {
  public:
   ForStatementSyntax(stdtoken _forKeyword, stdtoken _identifier,

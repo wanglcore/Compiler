@@ -53,7 +53,7 @@ public:
 class LiteralExpressionSyntax final : public ExpressionSyntax {
 public:
   LiteralExpressionSyntax(std::shared_ptr<SyntaxToken> _literalToken,
-                          Object _value, TypeSymbol _type)
+                          Object _value, BuildinType _type)
       : ExpressionSyntax(SyntaxKind::LiteralExpression),
         literalToken(_literalToken), value(_value), type(_type) {}
   LiteralExpressionSyntax(std::shared_ptr<SyntaxToken> _literalToken)
@@ -61,7 +61,7 @@ public:
                                 _literalToken->type) {}
   std::shared_ptr<SyntaxToken> literalToken;
   Object value;
-  TypeSymbol type;
+  BuildinType type;
 
   /*
   bool EqualsKind(SyntaxKind other) override {

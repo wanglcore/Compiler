@@ -10,11 +10,11 @@
 #include "Type.h"
 namespace Compiler {
 class BoundScope {
-private:
+ private:
   std::map<std::string, VariableSymbol> variables;
   std::map<std::string, FunctionSymbol> functions;
 
-public:
+ public:
   BoundScope(std::shared_ptr<BoundScope> _parent) : parent(_parent) {}
   bool TryDeclareVariable(VariableSymbol variable) {
     auto result = variables.insert(std::make_pair(variable.name, variable));
@@ -25,8 +25,7 @@ public:
       variable = iter->second;
       return true;
     }
-    if (parent == nullptr)
-      return false;
+    if (parent == nullptr) return false;
     return parent->TryLookUpVariable(name, variable);
   }
   bool TryDeclareFunction(FunctionSymbol function) {
@@ -38,8 +37,7 @@ public:
       function = iter->second;
       return true;
     }
-    if (parent == nullptr)
-      return false;
+    if (parent == nullptr) return false;
     return parent->TryLookUpFunction(name, function);
   }
   std::vector<VariableSymbol> GetDeclaredVariables() {
@@ -60,13 +58,18 @@ public:
 };
 
 class BoundGlobalScope {
-public:
+ public:
   BoundGlobalScope(std::shared_ptr<BoundGlobalScope> _previous,
                    std::vector<VariableSymbol> _variables,
+                   std::vector<FunctionSymbol> _functions,
                    std::shared_ptr<BoundStatement> _statement)
-      : previous(_previous), variables(_variables), statement(_statement) {}
+      : previous(_previous),
+        variables(_variables),
+        functions(_functions),
+        statement(_statement) {}
   std::shared_ptr<BoundGlobalScope> previous;
   std::vector<VariableSymbol> variables;
+  std::vector<FunctionSymbol> functions;
   std::shared_ptr<BoundStatement> statement;
 };
-} // namespace Compiler
+}  // namespace Compiler

@@ -67,6 +67,8 @@ class SyntaxFacts {
       return SyntaxKind::WhileToken;
     else if (text == "do")
       return SyntaxKind::DoToken;
+    else if (text == "def")
+        return SyntaxKind::DefToken;
     else
       return SyntaxKind::IdentifierToken;
   }

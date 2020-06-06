@@ -1,5 +1,10 @@
-{
-	let mut i = 2
-	i+=3
-	let j = i+3
+def add(a : int,b:int):void{
+	a+b
 }
+let mut i = 0
+var j = 0
+do{
+	j=j+1
+	i=i+1
+}while i<10
+add(i,j)
